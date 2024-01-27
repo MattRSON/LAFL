@@ -9,4 +9,4 @@ while i < 10
     i = i+1;
 end
 
-clear t
+%clear t
