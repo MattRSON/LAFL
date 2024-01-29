@@ -27,11 +27,13 @@ spi.open(bus, device)
 spi.max_speed_hz = 1000000 #1Mhz
 spi.mode = 0
 
+
 i = 1
 while i < 100:
     # try to read 16 bits from the spi bus
     #GPIO.output(Select1, GPIO.HIGH) # Test fake chip select pin
-    Data1 = readbytes(16)
+    Data1 = spi.readbytes(2)
+    ADC = Data1(0)*256+Data1(1)
     #GPIO.output(Select1, GPIO.LOW)
     print(Data1)
     time.sleep(1)
