@@ -7,9 +7,9 @@ import time
 GPIO.setmode(GPIO.BOARD)
 
 # Chip select pin definitions
-Select1 = 25
+#Select1 = 25
 
-GPIO.setup(Select1, GPIO.OUT)
+GPIO.setup(25, GPIO.OUT)
 
 # Use Spi bus 0
 bus = 0
@@ -22,7 +22,7 @@ spi = spidev.SpiDev()
 
 # Open a connections to the device
 spi.open(bus, device)
-
+GPIO.output(25, GPIO.HIGH)
 # Set the SPI speed and mode
 spi.max_speed_hz = 1000000 #1Mhz
 spi.mode = 0
@@ -30,9 +30,9 @@ spi.mode = 0
 
 while True:
     # try to read 16 bits from the spi bus
-    GPIO.output(Select1, GPIO.HIGH) # Test fake chip select pin
+    GPIO.output(25, GPIO.LOW) # Test fake chip select pin
     Data1 = spi.readbytes(2)
     ADC = Data1[0]*256+Data1[1]
-    GPIO.output(Select1, GPIO.LOW)
+    GPIO.output(25, GPIO.HIGH)
     print(ADC)
     time.sleep(1)
