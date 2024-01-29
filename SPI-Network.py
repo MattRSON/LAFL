@@ -31,7 +31,7 @@ spi.mode = 0
 
 # Setup tcp server
 HOST = ''
-PORT = 65433
+PORT = 65432
 
 
 
