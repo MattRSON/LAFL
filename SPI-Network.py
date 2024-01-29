@@ -33,6 +33,9 @@ spi.mode = 0
 HOST = ''
 PORT = 65432
 
+test = bytes (100)
+
+
 # Setup socket
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind((HOST, PORT))
@@ -41,10 +44,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # When connection is made start collecting and sending data
     with conn:
         while True:
+            data = conn.recv(1024) # Is the matlab script still running
+            if not data:
+                break # If not the kill the script
+
             # try to read 16 bits from the spi bus and send it over network
             GPIO.output(22, GPIO.LOW)
             Data1 = spi.readbytes(2)
             ADC = Data1[0]*256+Data1[1]
             GPIO.output(22, GPIO.HIGH)
-            conn.sendall(ADC.to_bytes(2,'little'))
-            print(ADC.to_bytes(2,'little'))
+            conn.sendall(test)
+            print(test)
