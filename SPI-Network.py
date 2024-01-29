@@ -54,4 +54,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             GPIO.output(22, GPIO.HIGH)
             conn.sendall(ADC.to_bytes(2,'little'))
             print(ADC.to_bytes(2,'little'))
-            time.sleep(5)
+            time.sleep(1/12000000)
