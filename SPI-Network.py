@@ -52,5 +52,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             Data1 = spi.readbytes(2)
             ADC = Data1[0]*256+Data1[1]
             GPIO.output(22, GPIO.HIGH)
-            conn.sendall(ADC.to_bytes(2,'big'))
-            print(ADC.to_bytes(2,'big'))
+            conn.sendall(ADC.to_bytes(2,'little'))
+            print(ADC.to_bytes(2,'little'))
