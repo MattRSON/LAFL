@@ -2,7 +2,7 @@
 import spidev
 import RPi.GPIO as GPIO
 import socket
-#import time
+import time
 
 # Use the pin numbers on the board
 GPIO.setmode(GPIO.BOARD)
@@ -54,3 +54,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             GPIO.output(22, GPIO.HIGH)
             conn.sendall(ADC.to_bytes(2,'little'))
             print(ADC.to_bytes(2,'little'))
+            time.sleep(5)
