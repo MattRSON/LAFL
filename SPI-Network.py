@@ -1,15 +1,15 @@
 # Imports Libraries
 import spidev
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import time
 
 # Use the pin numbers on the board
-GPIO.setmode(GPIO.BOARD)
+#GPIO.setmode(GPIO.BOARD)
 
 # Chip select pin definitions
 Select1 = 25
 
-GPIO.setup(Select1, GPIO.OUT)
+#GPIO.setup(Select1, GPIO.OUT)
 
 # Use Spi bus 0
 bus = 0
@@ -30,8 +30,8 @@ spi.mode = 0
 i = 1
 while i < 100:
     # try to read 16 bits from the spi bus
-    GPIO.output(Select1, GPIO.HIGH) # Test fake chip select pin
+    #GPIO.output(Select1, GPIO.HIGH) # Test fake chip select pin
     Data1 = readbytes(16)
-    GPIO.output(Select1, GPIO.LOW)
+    #GPIO.output(Select1, GPIO.LOW)
     print(Data1)
     time.sleep(1)
