@@ -43,10 +43,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # When connection is made start collecting and sending data
     with conn:
         while True:
-            #data = conn.recv(1024) # Is the matlab script still running
-            #if not data:
-            #    break # If not the kill the script
-
             # try to read 16 bits from the spi bus and send it over network
             GPIO.output(22, GPIO.LOW)
             Data1 = spi.readbytes(2)

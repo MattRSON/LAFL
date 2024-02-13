@@ -1,7 +1,6 @@
 # importing the required module
 import matplotlib.pyplot as plt
  
-print("hithere")
 # x axis values
 x = [1,2,3]
 # corresponding y axis values

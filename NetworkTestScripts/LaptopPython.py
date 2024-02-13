@@ -1,40 +1,66 @@
 import socket
+import threading
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 from collections import deque
+import signal
+import sys
 
-# Constants
-HOST = "LAFL"  # The server's hostname or IP address
-PORT = 65432  # The port used by the server
+HOST = "LAFL"   # Hostname
+PORT = 65433    # Port
+
+MAX_DATA_POINTS = 10000
 
 # Initialize plot
-plt.ion()  # Turn on interactive mode
 fig, ax = plt.subplots()
-x_data = deque(maxlen=50)  # Keep track of the last 50 data points
-y_data = deque(maxlen=50)
+x_data = deque(maxlen=MAX_DATA_POINTS)
+y_data = deque(maxlen=MAX_DATA_POINTS)
 line, = ax.plot(x_data, y_data)
 
-# Connect to the server
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((HOST, PORT))
-    
-    while True:
-        data = s.recv(2)
-        if not data:
-            break
+# Global Data Lock
+data_lock = threading.Lock()
+data_value = 0
 
-        # Assuming the data received is a string representation of a number
-        value = int(data.decode("utf-8"))
+# Thread to recieve data from PI (No Delay)
+def nodeA():
+    global data_value
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        while True:
+            data = s.recv(2)
+            if not data:
+                break
+            value = int.from_bytes(data, byteorder='big')
+            with data_lock:
+                data_value = value
 
-        # Update the data for plotting
-        x_data.append(len(x_data) + 1)
-        y_data.append(value)
 
-        # Update the plot
-        line.set_xdata(x_data)
-        line.set_ydata(y_data)
-        ax.relim()
-        ax.autoscale_view()
 
-        # Redraw the plot
-        plt.draw()
-        plt.pause(0.1)  # Adjust the pause duration as needed
+# Function to update plot in animation
+def update_plot(frame):
+    with data_lock:
+        value = data_value
+    x_data.append(len(x_data) + 1)
+    y_data.append(value)
+    line.set_xdata(x_data)
+    line.set_ydata(y_data)
+
+    ax.set_ylim(0,70000)
+
+    ax.relim()
+    ax.autoscale_view()
+
+def signal_handler(sig, frame):
+    print("ABORTING")
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
+
+ani = FuncAnimation(fig, update_plot, interval=1)
+
+# Thread creation and start
+RECV_NODE = threading.Thread(target=nodeA)
+RECV_NODE.daemon = True
+RECV_NODE.start()
+
+plt.show()
