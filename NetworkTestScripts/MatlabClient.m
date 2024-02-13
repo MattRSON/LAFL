@@ -11,13 +11,7 @@ while 1
     if ~isempty(raw_data)
         data = typecast(raw_data, 'uint16');
         % Now 'data' contains the received uint16 value
-        %disp(data);
-    else
-        %disp('Timeout or no data received.');
-    end
-    
-    if data == 4095
-       disp('Big Value') 
+        disp(data);
     end
     
 end
