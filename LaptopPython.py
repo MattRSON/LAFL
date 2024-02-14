@@ -1,3 +1,5 @@
+# Written my Jai Bhullar and Mathew Rawson
+
 import socket
 import threading
 import matplotlib.pyplot as plt
@@ -8,7 +10,7 @@ import sys
 import numpy as np
 
 HOST = "LAFL"   # Hostname
-PORT = 65433    # Port
+PORT = 65432    # Port
 
 MAX_DATA_POINTS = 400
 
