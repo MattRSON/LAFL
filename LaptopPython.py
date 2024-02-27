@@ -10,7 +10,7 @@ import sys
 import numpy as np
 
 HOST = "LAFL"   # Hostname
-PORT = 65432    # Port
+PORT = 65433    # Port
 
 MAX_DATA_POINTS = 400
 
