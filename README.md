@@ -15,3 +15,8 @@ Things to do
 - Filtering code
 - Diffrence of phase code
 - UI design
+
+
+Login
+ssh pi@LAFL
+pw LAFLTSMCR
