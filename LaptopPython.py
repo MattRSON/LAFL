@@ -8,6 +8,8 @@ from collections import deque # Data structure. Allows us to add and remove from
 import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
+import pickle
+import array
 
 ## Setting up the network with the name of computer and what port its sending data on
 HOST = "LAFL"   # Hostname
@@ -25,7 +27,7 @@ line, = ax.plot(x_data, y_data) # Graph the data points as a line
 
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
-data_value = 0 # Initializes the global data variable. This is the data from the ADCs
+data_value = array.array('I') # Initializes the global data variable. This is the data from the ADCs
 
 # Thread to recieve data from PI (No Delay)
 def nodeA():
@@ -36,7 +38,7 @@ def nodeA():
             data = s.recv(2) # Grab the data the server is sending
             if not data: # If the server stops sending data then close the connection
                 break
-            value = int.from_bytes(data, byteorder='big') # Turn the binary stream into an int
+            value = pickle.loads(data) # Turn the binary stream into an int
             with data_lock: # If this thread has control of the variable 
                 data_value = value # Update it
 
@@ -62,7 +64,7 @@ signal.signal(signal.SIGINT, signal_handler)
 
 # Sets how often the graph updates (The graph doesn't grab every value sent by the pi)
 # Its to slow to do that
-# But all of the data is still recived in real time and so we can process it quickly
+# But all of the data is still received in real time and so we can process it quickly
 ani = FuncAnimation(fig, update_plot, interval=1)
 
 # Thread creation and start
