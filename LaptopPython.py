@@ -8,14 +8,16 @@ from collections import deque # Data structure. Allows us to add and remove from
 import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
-import pickle
-import array
+import struct
+#import pickle
+#import array
 
 ## Setting up the network with the name of computer and what port its sending data on
-HOST = "LAFL"   # Hostname
+#HOST = "LAFL"   # Hostname
+HOST = "127.0.0.1" # Loopback for HardwareEmulator.py
 PORT = 65432    # Port
 
-MAX_DATA_POINTS = 400 # 4 seconds of points
+MAX_DATA_POINTS = 50 # 4 seconds of points
 
 ## Initialize plot
 fig, ax = plt.subplots() # Starts the plot
@@ -27,18 +29,32 @@ line, = ax.plot(x_data, y_data) # Graph the data points as a line
 
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
-data_value = array.array('I') # Initializes the global data variable. This is the data from the ADCs
+data_value = np.zeros(12) # Initializes the global data variable. This is the data from the ADCs
+value = np.zeros(12)
+#value = 0
 
-# Thread to recieve data from PI (No Delay)
+# Thread to receive data from PI (No Delay)
 def nodeA():
     global data_value # Grabs the global variable
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
         s.connect((HOST, PORT)) # Tries to connect to the sever
-        while True: # If it can
-            data = s.recv(2) # Grab the data the server is sending
-            if not data: # If the server stops sending data then close the connection
-                break
-            value = pickle.loads(data) # Turn the binary stream into an int
+        while True: # If it can 
+            packet = s.recv(48)
+            
+            bigint = int.from_bytes(packet,"little")
+            value[0] = bigint & 0xffffffff
+            value[1] = (bigint >> 32) & 0xffffffff
+            value[2] = (bigint >> 64) & 0xffffffff
+            value[3] = (bigint >> 96) & 0xffffffff
+            value[4] = (bigint >> 128) & 0xffffffff
+            value[5] = (bigint >> 160) & 0xffffffff
+            value[6] = (bigint >> 192) & 0xffffffff
+            value[7] = (bigint >> 224) & 0xffffffff
+            value[8] = (bigint >> 256) & 0xffffffff
+            value[9] = (bigint >> 288) & 0xffffffff
+            value[10] = (bigint >> 320) & 0xffffffff
+            value[11] = (bigint >> 352) & 0xffffffff
+            #print(value)
             with data_lock: # If this thread has control of the variable 
                 data_value = value # Update it
 
@@ -47,8 +63,8 @@ def nodeA():
 # Function to update plot in animation
 def update_plot(frame):
     with data_lock: # If the thread has control of the variable
-        value = data_value # Grab the mose recent update
-    y_data.appendleft(value) # Add it to the left of the array ei most recent data
+        value = data_value # Grab the most recent update
+    y_data.appendleft(value[1]) # Add it to the left of the array ei most recent data
     y_data.pop # Remove the right value in the array ei oldest data
     line.set_xdata(x_data) # Graph the x and y values as a line
     line.set_ydata(y_data)
@@ -65,7 +81,8 @@ signal.signal(signal.SIGINT, signal_handler)
 # Sets how often the graph updates (The graph doesn't grab every value sent by the pi)
 # Its to slow to do that
 # But all of the data is still received in real time and so we can process it quickly
-ani = FuncAnimation(fig, update_plot, interval=1)
+cache_frame_data=False
+ani = FuncAnimation(fig, update_plot, interval=100)
 
 # Thread creation and start
 RECV_NODE = threading.Thread(target=nodeA)
