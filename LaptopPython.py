@@ -8,9 +8,6 @@ from collections import deque # Data structure. Allows us to add and remove from
 import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
-import struct
-#import pickle
-#import array
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -23,15 +20,47 @@ MAX_DATA_POINTS = 50 # 4 seconds of points
 fig, ax = plt.subplots() # Starts the plot
 x_data = deque(maxlen=MAX_DATA_POINTS) # Sets up the array givin the max points its allowed to have
 x_data = range(MAX_DATA_POINTS) # Fills the array with numbers 0:Max points for the x axis
-y_data = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
-y_data.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
-line, = ax.plot(x_data, y_data) # Graph the data points as a line
+y_data1 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data1.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data2 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data2.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data3 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data3.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data4 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data4.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data5 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data5.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data6 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data6.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data7 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data7.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data8 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data8.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data9 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data9.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data10 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data10.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data11 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data11.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+y_data12 = deque(maxlen=MAX_DATA_POINTS) # Sets up the array the same way as x_data
+y_data12.extend(np.ones(MAX_DATA_POINTS)) # Fills the whole thing with ones to start
+line1, = ax.plot(x_data, y_data1) # Graph the data points as a line
+line2, = ax.plot(x_data, y_data2) # Graph the data points as a line
+line3, = ax.plot(x_data, y_data3) # Graph the data points as a line
+line4, = ax.plot(x_data, y_data4) # Graph the data points as a line
+line5, = ax.plot(x_data, y_data5) # Graph the data points as a line
+line6, = ax.plot(x_data, y_data6) # Graph the data points as a line
+line7, = ax.plot(x_data, y_data7) # Graph the data points as a line
+line8, = ax.plot(x_data, y_data8) # Graph the data points as a line
+line9, = ax.plot(x_data, y_data9) # Graph the data points as a line
+line10, = ax.plot(x_data, y_data10) # Graph the data points as a line
+line11, = ax.plot(x_data, y_data11) # Graph the data points as a line
+line12, = ax.plot(x_data, y_data12) # Graph the data points as a line
 
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
 data_value = np.zeros(12) # Initializes the global data variable. This is the data from the ADCs
 value = np.zeros(12)
-#value = 0
 
 # Thread to receive data from PI (No Delay)
 def nodeA():
@@ -64,10 +93,44 @@ def nodeA():
 def update_plot(frame):
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
-    y_data.appendleft(value[1]) # Add it to the left of the array ei most recent data
-    y_data.pop # Remove the right value in the array ei oldest data
-    line.set_xdata(x_data) # Graph the x and y values as a line
-    line.set_ydata(y_data)
+    y_data1.appendleft(value[0]) # Add it to the left of the array ei most recent data
+    y_data1.pop # Remove the right value in the array ei oldest data
+    y_data2.appendleft(value[1]) # Add it to the left of the array ei most recent data
+    y_data2.pop # Remove the right value in the array ei oldest data
+    y_data3.appendleft(value[2]) # Add it to the left of the array ei most recent data
+    y_data3.pop # Remove the right value in the array ei oldest data
+    y_data4.appendleft(value[3]) # Add it to the left of the array ei most recent data
+    y_data4.pop # Remove the right value in the array ei oldest data
+    y_data5.appendleft(value[4]) # Add it to the left of the array ei most recent data
+    y_data5.pop # Remove the right value in the array ei oldest data
+    y_data6.appendleft(value[5]) # Add it to the left of the array ei most recent data
+    y_data6.pop # Remove the right value in the array ei oldest data
+    y_data7.appendleft(value[6]) # Add it to the left of the array ei most recent data
+    y_data7.pop # Remove the right value in the array ei oldest data
+    y_data8.appendleft(value[7]) # Add it to the left of the array ei most recent data
+    y_data8.pop # Remove the right value in the array ei oldest data
+    y_data9.appendleft(value[8]) # Add it to the left of the array ei most recent data
+    y_data9.pop # Remove the right value in the array ei oldest data
+    y_data10.appendleft(value[9]) # Add it to the left of the array ei most recent data
+    y_data10.pop # Remove the right value in the array ei oldest data
+    y_data11.appendleft(value[10]) # Add it to the left of the array ei most recent data
+    y_data11.pop # Remove the right value in the array ei oldest data
+    y_data12.appendleft(value[11]) # Add it to the left of the array ei most recent data
+    y_data12.pop # Remove the right value in the array ei oldest data
+    #plt.plot(x_data,y_data)
+    #line.set_xdata(x_data) # Graph the x and y values as a line
+    line1.set_ydata(y_data1)
+    line2.set_ydata(y_data2)
+    line3.set_ydata(y_data3)
+    line4.set_ydata(y_data4)
+    line5.set_ydata(y_data5)
+    line6.set_ydata(y_data6)
+    line7.set_ydata(y_data7)
+    line8.set_ydata(y_data8)
+    line9.set_ydata(y_data9)
+    line10.set_ydata(y_data10)
+    line11.set_ydata(y_data11)
+    line12.set_ydata(y_data12)
 
     ax.set_ylim(0,4100) # Sets the limits of the graph
 
