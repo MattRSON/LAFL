@@ -3,8 +3,8 @@ import spidev
 import RPi.GPIO as GPIO
 import socket
 import time
-import pickle
-import array
+from timeit import default_timer as timer
+import numpy as np
 
 # Use the pin numbers on the board
 GPIO.setmode(GPIO.BOARD)
@@ -69,7 +69,7 @@ spi.mode = 0
 HOST = ''
 PORT = 65432
 
-ADC = array.array('I')
+ADC = np.zeros(12) # Initialize the list to hold the 12 signals
 
 # Setup socket
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -79,6 +79,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # When connection is made start collecting and sending data
     with conn:
         while True:
+            start = timer()
             # try to read 16 bits from the spi bus and send it over network
             GPIO.output(Select1, GPIO.LOW)
             Data = spi.readbytes(2)
@@ -140,6 +141,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[11] = Data[0]*256+Data[1]
             GPIO.output(Select12, GPIO.HIGH)
 
-            sendData = pickle.dumps(ADC)
-            conn.sendall(sendData)
-            time.sleep(1/600000)
+        
+            conn.sendall(bytes(ADC.astype(int)))
+            end = timer()
+            
+            # Delays based on how long it took to run the code.
+            # This keeps the code running at the 50ksps rate
+            if (end-start) < (1/50000):
+                time.sleep((1/50000)-(end-start))
+            else:
+                print("oh no!") # If code is not keeping up we have a problem
+
