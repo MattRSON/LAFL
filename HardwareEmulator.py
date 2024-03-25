@@ -18,6 +18,8 @@ Cosinewave = np.zeros(points) # Initialize the list for a cosine wave
 x_data = range(points) # Generates the list of x points for all waveforms
 i = 0 # Initialize the counter that keeps the system looping
 
+DataRate = 50000
+
 # Generate waveforms to send (More to come)
 for x in x_data:
     Sinewave[x] = int(((np.sin((x/50000)*2*(3.14)*(frequency)))+1)*2047)
@@ -61,5 +63,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             # Delays based on how long it took to run the code.
             # This keeps the code running at the 50ksps rate
             if (end-start) < (1/50000):
-                time.sleep((1/50000)-(end-start))
+                time.sleep((1/DataRate)-(end-start))
             

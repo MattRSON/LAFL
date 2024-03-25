@@ -9,6 +9,7 @@ import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
+import time
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -18,149 +19,63 @@ PORT = 65432    # Port
 MAX_DATA_POINTS = 10000
 GRAPHED_DATA_POINTS = 64
 
-## Initialize plot
-fig, ax = plt.subplots() # Starts the plot
-x_data = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array givin the max points its allowed to have
-x_data = range(GRAPHED_DATA_POINTS) # Fills the array with numbers 0:Max points for the x axis
-y_data1 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data1.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data2 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data2.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data3 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data3.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data4 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data4.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data5 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data5.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data6 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data6.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data7 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data7.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data8 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data8.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data9 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data9.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data10 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data10.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data11 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data11.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-y_data12 = deque(maxlen=GRAPHED_DATA_POINTS) # Sets up the array the same way as x_data
-y_data12.extend(np.ones(GRAPHED_DATA_POINTS)) # Fills the whole thing with ones to start
-line1, = ax.plot(x_data, y_data1) # Graph the data points as a line
-line2, = ax.plot(x_data, y_data2) # Graph the data points as a line
-line3, = ax.plot(x_data, y_data3) # Graph the data points as a line
-line4, = ax.plot(x_data, y_data4) # Graph the data points as a line
-line5, = ax.plot(x_data, y_data5) # Graph the data points as a line
-line6, = ax.plot(x_data, y_data6) # Graph the data points as a line
-line7, = ax.plot(x_data, y_data7) # Graph the data points as a line
-line8, = ax.plot(x_data, y_data8) # Graph the data points as a line
-line9, = ax.plot(x_data, y_data9) # Graph the data points as a line
-line10, = ax.plot(x_data, y_data10) # Graph the data points as a line
-line11, = ax.plot(x_data, y_data11) # Graph the data points as a line
-line12, = ax.plot(x_data, y_data12) # Graph the data points as a line
+DataRate = 50000 #Hz
 
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
 data_value = np.zeros((12,MAX_DATA_POINTS)) # Initializes the global data variable. This is the data from the ADCs
 value = np.zeros((12,MAX_DATA_POINTS))
 writepointer = 0
+
+
 # Thread to receive data from PI (No Delay)
-def nodeA():
-    global data_value # Grabs the global variable
-    global writepointer
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
-        s.connect((HOST, PORT)) # Tries to connect to the server
-        while True: # If it can 
-            #start = timer()
-            packet = s.recv(48)
-            bigint = int.from_bytes(packet,"little")
-            value[0,writepointer] = bigint & 0xffffffff
-            value[1,writepointer] = (bigint >> 32) & 0xffffffff
-            value[2,writepointer] = (bigint >> 64) & 0xffffffff
-            value[3,writepointer] = (bigint >> 96) & 0xffffffff
-            value[4,writepointer] = (bigint >> 128) & 0xffffffff
-            value[5,writepointer] = (bigint >> 160) & 0xffffffff
-            value[6,writepointer] = (bigint >> 192) & 0xffffffff
-            value[7,writepointer] = (bigint >> 224) & 0xffffffff
-            value[8,writepointer] = (bigint >> 256) & 0xffffffff
-            value[9,writepointer] = (bigint >> 288) & 0xffffffff
-            value[10,writepointer] = (bigint >> 320) & 0xffffffff
-            value[11,writepointer] = (bigint >> 352) & 0xffffffff
+def nodeA(pointer):
+    
+    start = timer()
+    packet = s.recv(48)
+    bigint = int.from_bytes(packet,"little")
+    value[0,pointer] = bigint & 0xffffffff
+    value[1,pointer] = (bigint >> 32) & 0xffffffff
+    value[2,pointer] = (bigint >> 64) & 0xffffffff
+    value[3,pointer] = (bigint >> 96) & 0xffffffff
+    value[4,pointer] = (bigint >> 128) & 0xffffffff
+    value[5,pointer] = (bigint >> 160) & 0xffffffff
+    value[6,pointer] = (bigint >> 192) & 0xffffffff
+    value[7,pointer] = (bigint >> 224) & 0xffffffff
+    value[8,pointer] = (bigint >> 256) & 0xffffffff
+    value[9,pointer] = (bigint >> 288) & 0xffffffff
+    value[10,pointer] = (bigint >> 320) & 0xffffffff
+    value[11,pointer] = (bigint >> 352) & 0xffffffff
 
-            writepointer = (writepointer + 1) % MAX_DATA_POINTS
-            #end = timer()
+    pointer = (pointer + 1) % MAX_DATA_POINTS
+    end = timer()
 
-            #print(end-start)
-            with data_lock: # If this thread has control of the variable 
-                data_value = value # Update it
+    if (end-start) < (1/50000):
+        time.sleep((1/DataRate)-(end-start))
+
+    return(value, pointer) # Update it
 
 def nodeFFT():
-    # make a big list that may or may not take over y_data because all the mics need some amount of history to work on.
+
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
+
     tempValue = np.zeros(MAX_DATA_POINTS)
     tempValue[0:writepointer-1] = np.flipud(value[0,0:writepointer-1])
     tempValue[writepointer:MAX_DATA_POINTS] = np.flipud(value[0,writepointer:MAX_DATA_POINTS])
 
     Fdomain = abs(np.fft.rfft(tempValue))
-    Frequency = np.fft.rfftfreq(Fdomain.size,2e-5)
+    Frequency = np.fft.rfftfreq(tempValue.size,2e-5)
 
     threshold = 0.5 * max(abs(Fdomain))
-    print(threshold)
-    mask = abs(Fdomain) > threshold
-    print(mask)
+    mask = Fdomain > threshold
+
     peaks = Frequency[mask]
     print(peaks)
-    #print(Fdomain)
 
-
-
-
-# Function to update plot in animation
-def update_plot(frame):
-    with data_lock: # If the thread has control of the variable
-        value = data_value # Grab the most recent update
-
-    y_data1.appendleft(value[0,0]) # Add it to the left of the array ei most recent data
-    y_data1.pop # Remove the right value in the array ei oldest data
-    y_data2.appendleft(value[1,0]) # Add it to the left of the array ei most recent data
-    y_data2.pop # Remove the right value in the array ei oldest data
-    y_data3.appendleft(value[2,0]) # Add it to the left of the array ei most recent data
-    y_data3.pop # Remove the right value in the array ei oldest data
-    y_data4.appendleft(value[3,0]) # Add it to the left of the array ei most recent data
-    y_data4.pop # Remove the right value in the array ei oldest data
-    y_data5.appendleft(value[4,0]) # Add it to the left of the array ei most recent data
-    y_data5.pop # Remove the right value in the array ei oldest data
-    y_data6.appendleft(value[5,0]) # Add it to the left of the array ei most recent data
-    y_data6.pop # Remove the right value in the array ei oldest data
-    y_data7.appendleft(value[6,0]) # Add it to the left of the array ei most recent data
-    y_data7.pop # Remove the right value in the array ei oldest data
-    y_data8.appendleft(value[7,0]) # Add it to the left of the array ei most recent data
-    y_data8.pop # Remove the right value in the array ei oldest data
-    y_data9.appendleft(value[8,0]) # Add it to the left of the array ei most recent data
-    y_data9.pop # Remove the right value in the array ei oldest data
-    y_data10.appendleft(value[9,0]) # Add it to the left of the array ei most recent data
-    y_data10.pop # Remove the right value in the array ei oldest data
-    y_data11.appendleft(value[10,0]) # Add it to the left of the array ei most recent data
-    y_data11.pop # Remove the right value in the array ei oldest data
-    y_data12.appendleft(value[11,0]) # Add it to the left of the array ei most recent data
-    y_data12.pop # Remove the right value in the array ei oldest data
-    #plt.plot(x_data,y_data)
-    #line.set_xdata(x_data) # Graph the x and y values as a line
-    line1.set_ydata(y_data1)
-    line2.set_ydata(y_data2)
-    line3.set_ydata(y_data3)
-    line4.set_ydata(y_data4)
-    line5.set_ydata(y_data5)
-    line6.set_ydata(y_data6)
-    line7.set_ydata(y_data7)
-    line8.set_ydata(y_data8)
-    line9.set_ydata(y_data9)
-    line10.set_ydata(y_data10)
-    line11.set_ydata(y_data11)
-    line12.set_ydata(y_data12)
-
-    ax.set_ylim(0,4100) # Sets the limits of the graph
+    FFT_Thread = threading.Timer(10,nodeFFT)
+    FFT_Thread.daemon = True
+    FFT_Thread.start()
 
 # Function to shutdown script safely
 def signal_handler(sig, frame):
@@ -169,19 +84,11 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-# Sets how often the graph updates (The graph doesn't grab every value sent by the pi)
-# Its to slow to do that
-# But all of the data is still received in real time and so we can process it quickly
-#ani = FuncAnimation(fig, update_plot, interval=100, cache_frame_data=False)
+FFT_Thread = threading.Timer(10,nodeFFT)
+FFT_Thread.daemon = True
+FFT_Thread.start()
 
-# Thread creation and start
-RECV_NODE = threading.Thread(target=nodeA)
-RECV_NODE.daemon = True
-RECV_NODE.start()
-
-FFT_NODE = threading.Timer(10,nodeFFT)
-FFT_NODE.daemon = True
-FFT_NODE.start()
-
-# Show the plot
-plt.show()
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
+        s.connect((HOST, PORT)) # Tries to connect to the server   
+        while True:
+            data_value, writepointer = nodeA(writepointer)
