@@ -8,7 +8,7 @@ HOST = '' # Hostname
 PORT = 65432 # Port
 
 # User Variables
-frequency = 1 # frequency in Hz
+frequency = 100 # frequency in Hz
 
 # Fixed Variables
 ADC = np.zeros(12) # Initialize the list to hold the 12 signals
