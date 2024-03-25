@@ -19,7 +19,7 @@ PORT = 65432    # Port
 MAX_DATA_POINTS = 10000
 GRAPHED_DATA_POINTS = 64
 
-DataRate = 50000 #Hz
+DataRate = 10000 #Hz
 
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
@@ -50,8 +50,10 @@ def nodeA(pointer):
     pointer = (pointer + 1) % MAX_DATA_POINTS
     end = timer()
 
-    if (end-start) < (1/50000):
+    if (end-start) < (1/DataRate):
         time.sleep((1/DataRate)-(end-start))
+    else:
+        print("oh no!") # If code is not keeping up we have a problem
 
     return(value, pointer) # Update it
 
@@ -59,20 +61,22 @@ def nodeFFT():
 
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
-
+    # Sets up a temp list that takes dat from the circular buffer and puts it in order
     tempValue = np.zeros(MAX_DATA_POINTS)
     tempValue[0:writepointer-1] = np.flipud(value[0,0:writepointer-1])
     tempValue[writepointer:MAX_DATA_POINTS] = np.flipud(value[0,writepointer:MAX_DATA_POINTS])
 
+    # Takes the real FFT of the data
     Fdomain = abs(np.fft.rfft(tempValue))
     Frequency = np.fft.rfftfreq(tempValue.size,2e-5)
 
+    # Finds the strongest frequencies
     threshold = 0.5 * max(abs(Fdomain))
     mask = Fdomain > threshold
-
     peaks = Frequency[mask]
     print(peaks)
 
+    # Sets the thread to run again in 10 seconds
     FFT_Thread = threading.Timer(10,nodeFFT)
     FFT_Thread.daemon = True
     FFT_Thread.start()

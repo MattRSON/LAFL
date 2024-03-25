@@ -18,7 +18,7 @@ Cosinewave = np.zeros(points) # Initialize the list for a cosine wave
 x_data = range(points) # Generates the list of x points for all waveforms
 i = 0 # Initialize the counter that keeps the system looping
 
-DataRate = 50000
+DataRate = 10000
 
 # Generate waveforms to send (More to come)
 for x in x_data:
