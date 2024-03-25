@@ -9,8 +9,12 @@ Things to do
     -- Fixed 2/27/24 (Both need to be set to big/MSB first)
 - expand graph to all 12 signals
     - Code on both the pi and laptop
+    -- Fixed probably 
+        - still needs real test
 - Implement FFT code
     - A step for noise reduction
+    -- Done for one mic 3/24/24
+        - still needs real test
     - common mode rejection??
 - Filtering code
 - Difference of phase code
