@@ -16,9 +16,13 @@ Things to do
     -- Done for one mic 3/24/24
         - still needs real test
     - common mode rejection??
-- Filtering code
-- Difference of phase code
+- Filtering code -- Cole
+    - Filter types
+- Difference of phase code -- Casie
+    - I dont even know what goes into this
+    - also need code to auto align microphone offsets in code
 - UI design
+    - For later
 
 
 1. Setting up Github Desktop
