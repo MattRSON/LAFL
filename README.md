@@ -21,8 +21,16 @@ Things to do
 - Difference of phase code -- Casie
     - I dont even know what goes into this
     - also need code to auto align microphone offsets in code
+
+
+FOR LATER EXPLORATION
 - UI design
-    - For later
+
+- Possible way to speed up code if we need full 50kHz or just more than we have
+    - Seems counter intuitive but we use a delay
+    - So instead of sending data at a rate of 50khz we save up a seconds worth of data and then send that as a bigger packet
+    - This might speed up the system b/c most of the time it taken with the network protocol. 
+        - So less protocol = more time
 
 
 1. Setting up Github Desktop
