@@ -29,7 +29,7 @@ writepointer = 0
 
 # Thread to receive data from PI (No Delay)
 def receiveData(pointer):
-    
+    global value
     start = timer()
     packet = s.recv(48)
     bigint = int.from_bytes(packet,"little")
@@ -48,15 +48,25 @@ def receiveData(pointer):
     value[10,pointer] = (bigint >> 320) & 0xffffffff
     value[11,pointer] = (bigint >> 352) & 0xffffffff
 
+    #value = commonModeRejection(value, pointer) # Dont think this helps at least for now
+
     pointer = (pointer + 1) % MAX_DATA_POINTS
     end = timer()
     functime = end-start
+
     if (functime) < (1/DataRate):
         time.sleep((1/DataRate)-(functime))
     else:
         print(functime) # If code is not keeping up we have a problem
 
     return(value, pointer) # Update it
+
+# finds the smallest value and subtracts it from the rest
+# Possible noise reduction step. ie any signal that hits all mics at exactly the same time are removed
+def commonModeRejection(value, pointer):
+    minValue = np.min(value[:,pointer])
+    value[:,pointer] = value[:,pointer] - minValue
+    return(value)
 
 def nodeFFT():
 
