@@ -15,12 +15,17 @@ Things to do
     - A step for noise reduction
     -- Done for one mic 3/24/24
         - still needs real test
-    - common mode rejection??
+    - common mode rejection
+        - Implemented but might not be useful
+            - Time will tell
+        
 - Filtering code -- Cole
     - Filter types
-- Difference of phase code -- Casie
-    - I dont even know what goes into this
+- Difference of phase code -- Casie && Possibly Tyler
+    - I don't even know what goes into this
     - also need code to auto align microphone offsets in code
+- Signal saving and replay with HW emulator -- Mathew
+- Box -- Robert
 
 
 FOR LATER EXPLORATION
