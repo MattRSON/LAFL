@@ -17,7 +17,6 @@ HOST = "127.0.0.1" # Loopback for HardwareEmulator.py
 PORT = 65432    # Port
 
 MAX_DATA_POINTS = 10000
-GRAPHED_DATA_POINTS = 64
 
 DataRate = 10000 #Hz
 
@@ -29,11 +28,13 @@ writepointer = 0
 
 
 # Thread to receive data from PI (No Delay)
-def nodeA(pointer):
+def receiveData(pointer):
     
     start = timer()
     packet = s.recv(48)
     bigint = int.from_bytes(packet,"little")
+    
+    
     value[0,pointer] = bigint & 0xffffffff
     value[1,pointer] = (bigint >> 32) & 0xffffffff
     value[2,pointer] = (bigint >> 64) & 0xffffffff
@@ -49,11 +50,11 @@ def nodeA(pointer):
 
     pointer = (pointer + 1) % MAX_DATA_POINTS
     end = timer()
-
-    if (end-start) < (1/DataRate):
-        time.sleep((1/DataRate)-(end-start))
+    functime = end-start
+    if (functime) < (1/DataRate):
+        time.sleep((1/DataRate)-(functime))
     else:
-        print("oh no!") # If code is not keeping up we have a problem
+        print(functime) # If code is not keeping up we have a problem
 
     return(value, pointer) # Update it
 
@@ -95,4 +96,4 @@ FFT_Thread.start()
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
         s.connect((HOST, PORT)) # Tries to connect to the server   
         while True:
-            data_value, writepointer = nodeA(writepointer)
+            data_value, writepointer = receiveData(writepointer)

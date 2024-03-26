@@ -62,6 +62,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
 
             # Delays based on how long it took to run the code.
             # This keeps the code running at the 50ksps rate
-            if (end-start) < (1/50000):
+            if (end-start) < (1/DataRate):
                 time.sleep((1/DataRate)-(end-start))
             
