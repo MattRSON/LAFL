@@ -16,7 +16,7 @@ import time
 HOST = "127.0.0.1" # Loopback for HardwareEmulator.py
 PORT = 65432    # Port
 
-MAX_DATA_POINTS = 10000
+MAX_DATA_POINTS = 100000
 
 DataRate = 10000 #Hz
 
@@ -56,8 +56,8 @@ def receiveData(pointer):
 
     if (functime) < (1/DataRate):
         time.sleep((1/DataRate)-(functime))
-    else:
-        print(functime) # If code is not keeping up we have a problem
+    #else:
+        #print(functime) # If code is not keeping up we have a problem
 
     return(value, pointer) # Update it
 
@@ -72,14 +72,14 @@ def nodeFFT():
 
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
-    # Sets up a temp list that takes dat from the circular buffer and puts it in order
+    # Sets up a temp list that takes data from the circular buffer and puts it in order
     tempValue = np.zeros(MAX_DATA_POINTS)
     tempValue[0:writepointer-1] = np.flipud(value[0,0:writepointer-1])
     tempValue[writepointer:MAX_DATA_POINTS] = np.flipud(value[0,writepointer:MAX_DATA_POINTS])
 
     # Takes the real FFT of the data
     Fdomain = abs(np.fft.rfft(tempValue))
-    Frequency = np.fft.rfftfreq(tempValue.size,2e-5)
+    Frequency = np.fft.rfftfreq(tempValue.size,1/DataRate)
 
     # Finds the strongest frequencies
     threshold = 0.5 * max(abs(Fdomain))
