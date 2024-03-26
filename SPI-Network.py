@@ -5,6 +5,8 @@ import socket
 import time
 from timeit import default_timer as timer
 import numpy as np
+import sys
+from datetime import datetime
 
 # Use the pin numbers on the board
 GPIO.setmode(GPIO.BOARD)
@@ -69,7 +71,14 @@ spi.mode = 0
 HOST = ''
 PORT = 65432
 
+
 ADC = np.zeros(12) # Initialize the list to hold the 12 signals
+
+DataRate = 50000
+
+archive = np.zeros((12,DataRate))
+tempArchive = np.zeros((12,DataRate))
+counter = 0
 
 # Setup socket
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -141,14 +150,39 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[11] = Data[0]*256+Data[1]
             GPIO.output(Select12, GPIO.HIGH)
 
-        
-            conn.sendall(bytes(ADC.astype(int)))
+
+            archive[:,counter] = ADC
+            counter += 1
+            archiveSize = int(np.size(archive)/12)
+            if counter >= archiveSize:
+                tempArchive = archive
+                archive = np.zeros((12,(archiveSize+DataRate)))
+                archive[:,0:archiveSize] = tempArchive
+                tempArchive = np.zeros((12,(archiveSize+DataRate)))
+
+
+            try:
+                # Send all the data over the network as 32bit ints
+                conn.sendall(bytes(ADC.astype(int)))
+            except ConnectionResetError:
+                currentDateTime = datetime.now()
+                filePath = (currentDateTime.strftime('%y%m%d_%H%M%S')) + '.bin'
+                
+                print('Saving data to ' + filePath)
+                print('File size is ' + str((archive.nbytes)/1000) + 'KB')
+                archive.tofile(filePath)
+
+                print("Shutdown")
+                sys.exit(0)
+
             end = timer()
             
             # Delays based on how long it took to run the code.
             # This keeps the code running at the 50ksps rate
-            if (end-start) < (1/50000):
-                time.sleep((1/50000)-(end-start))
+            if (end-start) < (1/DataRate):
+                time.sleep((1/DataRate)-(end-start))
             else:
                 print("oh no!") # If code is not keeping up we have a problem
+
+        
 

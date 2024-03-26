@@ -2,6 +2,7 @@ import socket # For network connection
 import time # Used for delaying the code to keep it on time
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer # Used to time the code to calculate the delay
+import sys
 
 ## Setting up the network with the name of computer and what port its sending data on
 HOST = '' # Hostname
@@ -17,6 +18,9 @@ Sinewave = np.zeros(points) # Initialize the list for a sine wave
 Cosinewave = np.zeros(points) # Initialize the list for a cosine wave
 x_data = range(points) # Generates the list of x points for all waveforms
 i = 0 # Initialize the counter that keeps the system looping
+
+DataRate = 50000
+
 
 # Generate waveforms to send (More to come)
 for x in x_data:
@@ -47,6 +51,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             ADC[10] = 4095
             ADC[11] = 4095
 
+
             # Increment the counter to keep the wave progressing
             i+=1
 
@@ -54,12 +59,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             if i>=(points):
                 i = 0
             
-            # Send all the data over the network as 32bit ints
-            conn.sendall(bytes(ADC.astype(int)))
+            try:
+                # Send all the data over the network as 32bit ints
+                conn.sendall(bytes(ADC.astype(int)))
+            except ConnectionResetError:
+
+                print("Shutdown")
+                sys.exit(0)
+
             end = timer() # Grabs the end time of the script
 
             # Delays based on how long it took to run the code.
             # This keeps the code running at the 50ksps rate
-            if (end-start) < (1/50000):
-                time.sleep((1/50000)-(end-start))
-            
+            if (end-start) < (1/DataRate):
+                time.sleep((1/DataRate)-(end-start))  
