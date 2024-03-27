@@ -145,10 +145,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[10] = Data[0]*256+Data[1]
             GPIO.output(Select11, GPIO.HIGH)
 
-            GPIO.output(Select12, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[11] = Data[0]*256+Data[1]
-            GPIO.output(Select12, GPIO.HIGH)
+            #GPIO.output(Select12, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            ADC[11] = 0 #Data[0]*256+Data[1]
+            #GPIO.output(Select12, GPIO.HIGH)
 
 
             archive[:,counter] = ADC
