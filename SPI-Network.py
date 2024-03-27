@@ -167,7 +167,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             except ConnectionResetError:
                 currentDateTime = datetime.now()
                 filePath = (currentDateTime.strftime('%y%m%d_%H%M%S')) + '.bin'
-                
+                archive = int(archive)
+
                 print('Saving data to ' + filePath)
                 print('File size is ' + str((archive.nbytes)/1000) + 'KB')
                 archive.tofile(filePath)
