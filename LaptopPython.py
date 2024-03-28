@@ -11,7 +11,7 @@ import numpy as np # For extra number manipulation
 
 ## Setting up the network with the name of computer and what port its sending data on
 HOST = "LAFL"   # Hostname
-PORT = 65432    # Port
+PORT = 65433    # Port
 
 MAX_DATA_POINTS = 400 # 4 seconds of points
 
