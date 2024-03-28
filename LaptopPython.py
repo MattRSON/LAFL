@@ -126,7 +126,7 @@ def update_plot(frame):
     line5.set_ydata(y_data5)
     line6.set_ydata(y_data6)
     line7.set_ydata(y_data7)
-    #line8.set_ydata(y_data8)
+    line8.set_ydata(y_data8)
     #line9.set_ydata(y_data9)
     #line10.set_ydata(y_data10)
     #line11.set_ydata(y_data11)
