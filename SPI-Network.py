@@ -95,60 +95,73 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[0] = Data[0]*256+Data[1]
             GPIO.output(Select1, GPIO.HIGH)
 
-            GPIO.output(Select2, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[1] = Data[0]*256+Data[1]
-            GPIO.output(Select2, GPIO.HIGH)
+            #GPIO.output(Select2, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[1] = Data[0]*256+Data[1]
+            #GPIO.output(Select2, GPIO.HIGH)
 
-            GPIO.output(Select3, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[2] = Data[0]*256+Data[1]
-            GPIO.output(Select3, GPIO.HIGH)
+            #GPIO.output(Select3, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[2] = Data[0]*256+Data[1]
+            #GPIO.output(Select3, GPIO.HIGH)
 
-            GPIO.output(Select4, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[3] = Data[0]*256+Data[1]
-            GPIO.output(Select4, GPIO.HIGH)
+            #GPIO.output(Select4, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[3] = Data[0]*256+Data[1]
+            #GPIO.output(Select4, GPIO.HIGH)
 
-            GPIO.output(Select5, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[4] = Data[0]*256+Data[1]
-            GPIO.output(Select5, GPIO.HIGH)
+            #GPIO.output(Select5, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[4] = Data[0]*256+Data[1]
+            #GPIO.output(Select5, GPIO.HIGH)
 
-            GPIO.output(Select6, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[5] = Data[0]*256+Data[1]
-            GPIO.output(Select6, GPIO.HIGH)
+            #GPIO.output(Select6, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[5] = Data[0]*256+Data[1]
+            #GPIO.output(Select6, GPIO.HIGH)
 
-            GPIO.output(Select7, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[6] = Data[0]*256+Data[1]
-            GPIO.output(Select7, GPIO.HIGH)
+            #GPIO.output(Select7, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[6] = Data[0]*256+Data[1]
+            #GPIO.output(Select7, GPIO.HIGH)
 
-            GPIO.output(Select8, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[7] = Data[0]*256+Data[1]
-            GPIO.output(Select8, GPIO.HIGH)
+            #GPIO.output(Select8, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[7] = Data[0]*256+Data[1]
+            #GPIO.output(Select8, GPIO.HIGH)
 
-            GPIO.output(Select9, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[8] = Data[0]*256+Data[1]
-            GPIO.output(Select9, GPIO.HIGH)
+            #GPIO.output(Select9, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[8] = Data[0]*256+Data[1]
+            #GPIO.output(Select9, GPIO.HIGH)
 
-            GPIO.output(Select10, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[9] = Data[0]*256+Data[1]
-            GPIO.output(Select10, GPIO.HIGH)
+            #GPIO.output(Select10, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[9] = Data[0]*256+Data[1]
+            #GPIO.output(Select10, GPIO.HIGH)
 
-            GPIO.output(Select11, GPIO.LOW)
-            Data = spi.readbytes(2)
-            ADC[10] = Data[0]*256+Data[1]
-            GPIO.output(Select11, GPIO.HIGH)
+            #GPIO.output(Select11, GPIO.LOW)
+            #Data = spi.readbytes(2)
+            #ADC[10] = Data[0]*256+Data[1]
+            #GPIO.output(Select11, GPIO.HIGH)
 
             #GPIO.output(Select12, GPIO.LOW)
             #Data = spi.readbytes(2)
-            ADC[11] = 0 #Data[0]*256+Data[1]
+            #ADC[11] = Data[0]*256+Data[1]
             #GPIO.output(Select12, GPIO.HIGH)
+
+            ADC[1] = 0
+            ADC[2] = 0
+            ADC[3] = 0
+            ADC[4] = 0
+            ADC[5] = 0
+            ADC[6] = 0
+            ADC[7] = 0
+            ADC[8] = 0
+            ADC[9] = 0
+            ADC[10] = 0
+            ADC[11] = 0
+            
 
 
             archive[:,counter] = ADC

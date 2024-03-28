@@ -10,8 +10,8 @@ import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 
 ## Setting up the network with the name of computer and what port its sending data on
-#HOST = "LAFL"   # Hostname
-HOST = "127.0.0.1" # Loopback for HardwareEmulator.py
+HOST = "LAFL"   # Hostname
+#HOST = "127.0.0.1" # Loopback for HardwareEmulator.py
 PORT = 65432    # Port
 
 MAX_DATA_POINTS = 50 # 4 seconds of points
@@ -70,7 +70,7 @@ def nodeA():
         while True: # If it can 
             packet = s.recv(48)
             
-            bigint = int.from_bytes(packet,"little")
+            bigint = int.from_bytes(packet,"big")
             value[0] = bigint & 0xffffffff
             value[1] = (bigint >> 32) & 0xffffffff
             value[2] = (bigint >> 64) & 0xffffffff
@@ -83,7 +83,7 @@ def nodeA():
             value[9] = (bigint >> 288) & 0xffffffff
             value[10] = (bigint >> 320) & 0xffffffff
             value[11] = (bigint >> 352) & 0xffffffff
-            #print(value)
+            print(value[0])
             with data_lock: # If this thread has control of the variable 
                 data_value = value # Update it
 
@@ -120,17 +120,17 @@ def update_plot(frame):
     #plt.plot(x_data,y_data)
     #line.set_xdata(x_data) # Graph the x and y values as a line
     line1.set_ydata(y_data1)
-    line2.set_ydata(y_data2)
-    line3.set_ydata(y_data3)
-    line4.set_ydata(y_data4)
-    line5.set_ydata(y_data5)
-    line6.set_ydata(y_data6)
-    line7.set_ydata(y_data7)
-    line8.set_ydata(y_data8)
-    line9.set_ydata(y_data9)
-    line10.set_ydata(y_data10)
-    line11.set_ydata(y_data11)
-    line12.set_ydata(y_data12)
+    #line2.set_ydata(y_data2)
+    #line3.set_ydata(y_data3)
+    #line4.set_ydata(y_data4)
+    #line5.set_ydata(y_data5)
+    #line6.set_ydata(y_data6)
+    #line7.set_ydata(y_data7)
+    #line8.set_ydata(y_data8)
+    #line9.set_ydata(y_data9)
+    #line10.set_ydata(y_data10)
+    #line11.set_ydata(y_data11)
+    #line12.set_ydata(y_data12)
 
     ax.set_ylim(0,4100) # Sets the limits of the graph
 
