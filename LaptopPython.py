@@ -129,8 +129,8 @@ def update_plot(frame):
     line8.set_ydata(y_data8)
     line9.set_ydata(y_data9)
     line10.set_ydata(y_data10)
-    #line11.set_ydata(y_data11)
-    #line12.set_ydata(y_data12)
+    line11.set_ydata(y_data11)
+    line12.set_ydata(y_data12)
 
     ax.set_ylim(0,4100) # Sets the limits of the graph
 
