@@ -8,9 +8,9 @@ import time
 GPIO.setmode(GPIO.BOARD)
 
 # Chip select pin definitions
-Select1 = 22
+Select1 = 3
 
-GPIO.setup(22, GPIO.OUT)
+GPIO.setup(Select1, GPIO.OUT)
 
 # Use Spi bus 0
 bus = 0
@@ -23,7 +23,7 @@ spi = spidev.SpiDev()
 
 # Open a connections to the device
 spi.open(bus, device)
-GPIO.output(22, GPIO.HIGH) # Enable fake CS pin
+GPIO.output(Select1, GPIO.HIGH) # Enable fake CS pin
 
 # Set the SPI speed and mode
 spi.max_speed_hz = 1000000 #1Mhz
@@ -48,6 +48,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             Data1 = spi.readbytes(2)
             ADC = Data1[0]*256+Data1[1]
             GPIO.output(22, GPIO.HIGH)
-            conn.sendall(ADC.to_bytes(2,'big'))
+            conn.sendall(ADC.to_bytes(2,'little'))
             #print(ADC.to_bytes(2,'little'))
             time.sleep(1/50000)
