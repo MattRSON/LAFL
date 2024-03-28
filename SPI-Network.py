@@ -64,7 +64,7 @@ GPIO.output(Select11, GPIO.HIGH) # Enable CS11 pin
 GPIO.output(Select12, GPIO.HIGH) # Enable CS12 pin
 
 # Set the SPI speed and mode
-spi.max_speed_hz = 12000000 #12Mhz
+spi.max_speed_hz = 6000000 #12Mhz
 spi.mode = 0
 
 # Setup tcp server
