@@ -95,7 +95,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[0] = Data[0]*256+Data[1]
             GPIO.output(Select1, GPIO.HIGH)
 
-            print(ADC[0])
+            
             #GPIO.output(Select2, GPIO.LOW)
             #Data = spi.readbytes(2)
             #ADC[1] = Data[0]*256+Data[1]
@@ -163,7 +163,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[10] = 0
             ADC[11] = 0
             
-
+            print(ADC)
 
             archive[:,counter] = ADC
             counter += 1
@@ -193,10 +193,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             
             # Delays based on how long it took to run the code.
             # This keeps the code running at the 50ksps rate
-            if (end-start) < (1/DataRate):
-                time.sleep((1/DataRate)-(end-start))
-            else:
-                print("oh no!") # If code is not keeping up we have a problem
+            #if (end-start) < (1/DataRate):
+            #    time.sleep((1/DataRate)-(end-start))
+            #else:
+            #    print("oh no!") # If code is not keeping up we have a problem
 
         
 
