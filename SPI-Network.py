@@ -100,10 +100,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[1] = Data[0]*256+Data[1]
             GPIO.output(Select2, GPIO.HIGH)
 
-            #GPIO.output(Select3, GPIO.LOW)
-            #Data = spi.readbytes(2)
-            #ADC[2] = Data[0]*256+Data[1]
-            #GPIO.output(Select3, GPIO.HIGH)
+            GPIO.output(Select3, GPIO.LOW)
+            Data = spi.readbytes(2)
+            ADC[2] = Data[0]*256+Data[1]
+            GPIO.output(Select3, GPIO.HIGH)
 
             #GPIO.output(Select4, GPIO.LOW)
             #Data = spi.readbytes(2)
@@ -151,7 +151,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #GPIO.output(Select12, GPIO.HIGH)
 
             #ADC[1] = 0
-            ADC[2] = 0
+            #ADC[2] = 0
             ADC[3] = 0
             ADC[4] = 0
             ADC[5] = 0

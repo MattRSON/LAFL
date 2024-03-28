@@ -120,8 +120,8 @@ def update_plot(frame):
     #plt.plot(x_data,y_data)
     #line.set_xdata(x_data) # Graph the x and y values as a line
     line1.set_ydata(y_data1)
-    #line2.set_ydata(y_data2)
-    #line3.set_ydata(y_data3)
+    line2.set_ydata(y_data2)
+    line3.set_ydata(y_data3)
     #line4.set_ydata(y_data4)
     #line5.set_ydata(y_data5)
     #line6.set_ydata(y_data6)
