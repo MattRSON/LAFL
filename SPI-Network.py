@@ -152,7 +152,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
             #ADC[1] = 0
             #ADC[2] = 0
-            ADC[3] = 0
+            #ADC[3] = 0
             ADC[4] = 0
             ADC[5] = 0
             ADC[6] = 0
