@@ -95,6 +95,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[0] = Data[0]*256+Data[1]
             GPIO.output(Select1, GPIO.HIGH)
 
+            print(ADC[0])
             #GPIO.output(Select2, GPIO.LOW)
             #Data = spi.readbytes(2)
             #ADC[1] = Data[0]*256+Data[1]
@@ -180,7 +181,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             except ConnectionResetError:
                 currentDateTime = datetime.now()
                 filePath = (currentDateTime.strftime('%y%m%d_%H%M%S')) + '.bin'
-                archive = int(archive)
 
                 print('Saving data to ' + filePath)
                 print('File size is ' + str((archive.nbytes)/1000) + 'KB')
