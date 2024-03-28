@@ -70,7 +70,7 @@ def nodeA():
         while True: # If it can 
             packet = s.recv(48)
             
-            bigint = int.from_bytes(packet,"big")
+            bigint = int.from_bytes(packet,"little")
             value[0] = bigint & 0xffffffff
             value[1] = (bigint >> 32) & 0xffffffff
             value[2] = (bigint >> 64) & 0xffffffff
