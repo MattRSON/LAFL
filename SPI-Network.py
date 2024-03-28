@@ -44,10 +44,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     with conn:
         while True:
             # try to read 16 bits from the spi bus and send it over network
-            GPIO.output(22, GPIO.LOW)
+            GPIO.output(Select1, GPIO.LOW)
             Data1 = spi.readbytes(2)
             ADC = Data1[0]*256+Data1[1]
-            GPIO.output(22, GPIO.HIGH)
+            GPIO.output(Select1, GPIO.HIGH)
             conn.sendall(ADC.to_bytes(2,'little'))
             #print(ADC.to_bytes(2,'little'))
             time.sleep(1/50000)
