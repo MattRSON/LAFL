@@ -150,6 +150,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #ADC[11] = Data[0]*256+Data[1]
             #GPIO.output(Select12, GPIO.HIGH)
 
+            #ADC[1] = 0
             ADC[2] = 0
             ADC[3] = 0
             ADC[4] = 0
@@ -161,7 +162,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[10] = 0
             ADC[11] = 0
             
-            print(ADC)
 
             archive[:,counter] = ADC
             counter += 1
