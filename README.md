@@ -7,10 +7,10 @@ The code base for both the Python script running on the RPI and on a laptop
 Things to do
 - Fix graph big/little bit mixup
     -- Fixed 2/27/24 (Both need to be set to big/MSB first)
+    -- Fixed again on 3/27/24 with 12 signals it switched to little/LSB
 - expand graph to all 12 signals
     - Code on both the pi and laptop
-    -- Fixed probably 
-        - still needs real test
+    - Done 3/27/24
 - Implement FFT code
     - A step for noise reduction
     -- Done for one mic 3/24/24
@@ -24,7 +24,8 @@ Things to do
 - Difference of phase code -- Casie && Possibly Tyler
     - I don't even know what goes into this
     - also need code to auto align microphone offsets in code
-- Signal saving and replay with HW emulator -- Mathew
+- Signal saving and replay with HW emulator
+  - Done 3/27/24
 - Box -- Robert
 
 
