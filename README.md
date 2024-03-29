@@ -67,7 +67,7 @@ FOR LATER EXPLORATION
     - 'LaptopPython.py' in the name of the script
     - This will only work if the Rpi code is running
     - To stop the code hit the x on the window
-- To run the code on the Rpi side we first need to connect to it
+- To run the code on the Rpi side we first need to connect to it (Ignore for HardwareEmulator)
     - in the unused terminal type 'ssh pi@LAFL'
         - This will connect to it as user 'pi' to computer 'LAFL'
     - The password is LAFLTSMCR
@@ -76,6 +76,9 @@ FOR LATER EXPLORATION
         - The code will show nothing, this is normal
         - A warning might pop up. In can be ignored
         - To stop the code hit 'ctrl C'
+- To run the hardware emulator
+    - Set the host in the LaptopPython to the number based one
+    -  To run the code type 'python HardwareEmulator.py'
 
 4. Navigating in the command line
 - Changing folder
