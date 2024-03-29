@@ -65,8 +65,8 @@ def phase_difference(signal1, signal2, fs):
         value = data_value # Grab the most recent update
 
     # Perform Fourier transforms
-    fft_signal1 = np.fft.fft(signal1)
-    fft_signal2 = np.fft.fft(signal2)
+    fft_signal1 = np.fft.fft(value[0,:])
+    fft_signal2 = np.fft.fft(value)
     
     # Compute phase spectra
     phase_spectrum1 = np.angle(fft_signal1)
