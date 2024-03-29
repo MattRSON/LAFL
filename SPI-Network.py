@@ -151,4 +151,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 time.sleep((1/50000)-(end-start))
             else:
                 print("oh no!") # If code is not keeping up we have a problem
-

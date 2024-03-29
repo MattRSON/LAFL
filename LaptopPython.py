@@ -10,6 +10,7 @@ import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
 import time
+#from sklearn.preprocessing import StandardScaler
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -27,6 +28,58 @@ data_value = np.zeros((12,MAX_DATA_POINTS)) # Initializes the global data variab
 value = np.zeros((12,MAX_DATA_POINTS))
 writepointer = 0
 
+# Difference of phase function
+def PhaseDiff():
+    with data_lock: # If the thread has control of the variable
+        value = data_value # Grab the most recent update
+
+    # Sets up a temp list that takes dat from the circular buffer and puts it in order
+    tempData = np.zeros((MAX_DATA_POINTS,2))
+    tempData[:,0] = circular2linear(writepointer, value[0,:])
+    tempData[:,1] = circular2linear(writepointer, value[1,:])
+
+    StandardData = np.zeros((MAX_DATA_POINTS,2))            # Create an array for calculation
+    DataMean1 = np.mean(tempData[:,0])                      # Find the mean of the first signal
+    Max1 = max(abs(tempData[:,0] - DataMean1))              # Find the maximum value
+    StandardData[:,0] = (tempData[:,0] - DataMean1) / Max1  # Standardized data --> Unit gain
+
+    DataMean2 = np.mean(tempData[:,1])                      # Repeat process above for second signal
+    Max2 = max(abs(tempData[:,1] - DataMean2))
+    StandardData[:,1] = (tempData[:,1] - DataMean2) / Max2
+    #print(StandardData)
+
+    c = np.cov(np.transpose(StandardData))                  # Transpose the data and find the covariance
+    #print(c)
+    Phi = np.arccos(c[0,1])                                 # Calculate phase value
+    #print("hi :)")                      # Completely Necessary Code...
+
+
+    #PhaseDiff_Thread = threading.Timer(10,PhaseDiff)
+    #PhaseDiff_Thread.daemon = True
+    #PhaseDiff_Thread.start()
+
+    #print(Phi)                         # Return Difference of Phase Value
+
+def phase_difference(signal1, signal2, fs):
+    with data_lock: # If the thread has control of the variable
+        value = data_value # Grab the most recent update
+
+    # Perform Fourier transforms
+    fft_signal1 = np.fft.fft(signal1)
+    fft_signal2 = np.fft.fft(signal2)
+    
+    # Compute phase spectra
+    phase_spectrum1 = np.angle(fft_signal1)
+    phase_spectrum2 = np.angle(fft_signal2)
+    
+    # Calculate phase difference spectrum
+    phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
+    
+    # Convert phase difference to time delay (optional)
+    freq = np.fft.fftfreq(len(signal1), 1/fs)
+    time_delay = phase_diff_spectrum / (2 * np.pi * freq)
+    
+    return phase_diff_spectrum, time_delay
 
 # Thread to receive data from PI (No Delay)
 def nodeA(pointer):
@@ -52,8 +105,8 @@ def nodeA(pointer):
 
     if (end-start) < (1/DataRate):
         time.sleep((1/DataRate)-(end-start))
-    else:
-        print("oh no!") # If code is not keeping up we have a problem
+    #else:
+    #    print("oh no!") # If code is not keeping up we have a problem
 
     return(value, pointer) # Update it
 
@@ -62,13 +115,13 @@ def nodeFFT():
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
     # Sets up a temp list that takes dat from the circular buffer and puts it in order
-    tempValue = np.zeros(MAX_DATA_POINTS)
-    tempValue[0:writepointer-1] = np.flipud(value[0,0:writepointer-1])
-    tempValue[writepointer:MAX_DATA_POINTS] = np.flipud(value[0,writepointer:MAX_DATA_POINTS])
+
+    mic1 = circular2linear(writepointer, value[0,:])
+    
 
     # Takes the real FFT of the data
-    Fdomain = abs(np.fft.rfft(tempValue))
-    Frequency = np.fft.rfftfreq(tempValue.size,2e-5)
+    Fdomain = abs(np.fft.rfft(mic1))
+    Frequency = np.fft.rfftfreq(mic1.size,2e-5)
 
     # Finds the strongest frequencies
     threshold = 0.5 * max(abs(Fdomain))
@@ -77,9 +130,17 @@ def nodeFFT():
     print(peaks)
 
     # Sets the thread to run again in 10 seconds
-    FFT_Thread = threading.Timer(10,nodeFFT)
-    FFT_Thread.daemon = True
-    FFT_Thread.start()
+    #FFT_Thread = threading.Timer(10,nodeFFT)
+    #FFT_Thread.daemon = True
+    #FFT_Thread.start()
+
+# rearanges a circular buffer into a linear one give the new 2 old pointer
+def circular2linear(pointer, array):
+    size = np.size(array)
+    tempValue = np.zeros(size)
+    tempValue[0:pointer-1] = np.flipud(value[0,0:pointer-1])
+    tempValue[pointer:size] = np.flipud(value[0,pointer:size])
+    return tempValue
 
 # Function to shutdown script safely
 def signal_handler(sig, frame):
@@ -88,9 +149,17 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-FFT_Thread = threading.Timer(10,nodeFFT)
-FFT_Thread.daemon = True
-FFT_Thread.start()
+#FFT_Thread = threading.Timer(10,nodeFFT)
+#FFT_Thread.daemon = True
+#FFT_Thread.start()
+
+#PhaseDiff_Thread = threading.Timer(10,PhaseDiff)
+#PhaseDiff_Thread.daemon = True
+#PhaseDiff_Thread.start()
+
+PhaseDiff_Thread2 = threading.Timer(10,phase_difference)
+PhaseDiff_Thread2.daemon = True
+PhaseDiff_Thread2.start()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
         s.connect((HOST, PORT)) # Tries to connect to the server   
