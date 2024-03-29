@@ -10,6 +10,8 @@ import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
 import time
+import struct
+from scipy.signal import butter, sosfilt # Functions for applying a lowpass butterworth
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -29,42 +31,34 @@ writepointer = 0
 
 
 # Thread to receive data from PI (No Delay)
-def nodeA(pointer):
-    
-    start = timer()
-    packet = s.recv(48)
-    bigint = int.from_bytes(packet,"little")
-    value[0,pointer] = bigint & 0xffffffff
-    value[1,pointer] = (bigint >> 32) & 0xffffffff
-    value[2,pointer] = (bigint >> 64) & 0xffffffff
-    value[3,pointer] = (bigint >> 96) & 0xffffffff
-    value[4,pointer] = (bigint >> 128) & 0xffffffff
-    value[5,pointer] = (bigint >> 160) & 0xffffffff
-    value[6,pointer] = (bigint >> 192) & 0xffffffff
-    value[7,pointer] = (bigint >> 224) & 0xffffffff
-    value[8,pointer] = (bigint >> 256) & 0xffffffff
-    value[9,pointer] = (bigint >> 288) & 0xffffffff
-    value[10,pointer] = (bigint >> 320) & 0xffffffff
-    value[11,pointer] = (bigint >> 352) & 0xffffffff
+def nodeA():
+    packet = b''
 
-    pointer = (pointer + 1) % MAX_DATA_POINTS
+    while len(packet) == 0:
+        packet = s.recv(48)
+    start = timer()
+
+    vals = struct.unpack("!12I", packet)
+
     end = timer()
 
     if (end-start) < (1/DataRate):
         time.sleep((1/DataRate)-(end-start))
     else:
         print("oh no!") # If code is not keeping up we have a problem
+        print(end-start)
 
-    return(value, pointer) # Update it
+    return np.array(vals) # Update it
 
 def nodeFFT():
 
-    with data_lock: # If the thread has control of the variable
+    with data_lock: # If the thread has control of the variables
         value = data_value # Grab the most recent update
-    # Sets up a temp list that takes dat from the circular buffer and puts it in order
-    tempValue = np.zeros(MAX_DATA_POINTS)
-    tempValue[0:writepointer-1] = np.flipud(value[0,0:writepointer-1])
-    tempValue[writepointer:MAX_DATA_POINTS] = np.flipud(value[0,writepointer:MAX_DATA_POINTS])
+
+        # Sets up a temp list that takes dat from the circular buffer and puts it in order
+        tempValue = np.zeros(MAX_DATA_POINTS)
+        tempValue[0:writepointer-1] = np.flipud(value[0,0:writepointer-1])
+        tempValue[writepointer:MAX_DATA_POINTS] = np.flipud(value[0,writepointer:MAX_DATA_POINTS])
 
     # Takes the real FFT of the data
     Fdomain = abs(np.fft.rfft(tempValue))
@@ -95,4 +89,7 @@ FFT_Thread.start()
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
         s.connect((HOST, PORT)) # Tries to connect to the server   
         while True:
-            data_value, writepointer = nodeA(writepointer)
+            tmp = nodeA()
+            with data_lock: # If the thread has control of the variables
+                data_value[:, writepointer] = tmp
+                writepointer = (writepointer + 1) % MAX_DATA_POINTS
