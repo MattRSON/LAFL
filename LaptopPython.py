@@ -50,6 +50,7 @@ def nodeA():
 
     return np.array(vals) # Update it
 
+# Funtion for doing Fast Fourier Transform
 def nodeFFT():
 
     with data_lock: # If the thread has control of the variables
@@ -80,6 +81,9 @@ def signal_handler(sig, frame):
     print("ABORTING")
     sys.exit(0)
 
+# Function for Butterworth lowpass filtering
+#def 
+
 signal.signal(signal.SIGINT, signal_handler)
 
 FFT_Thread = threading.Timer(10,nodeFFT)
@@ -91,5 +95,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
         while True:
             tmp = nodeA()
             with data_lock: # If the thread has control of the variables
+                # Filtering goes here (likely?)
+                
                 data_value[:, writepointer] = tmp
                 writepointer = (writepointer + 1) % MAX_DATA_POINTS
+                
