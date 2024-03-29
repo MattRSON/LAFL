@@ -63,13 +63,14 @@ GPIO.output(Select10, GPIO.HIGH) # Enable CS10 pin
 GPIO.output(Select11, GPIO.HIGH) # Enable CS11 pin
 GPIO.output(Select12, GPIO.HIGH) # Enable CS12 pin
 
+
 # Set the SPI speed and mode
 spi.max_speed_hz = 6000000 #12Mhz
 spi.mode = 0
 
 # Setup tcp server
 HOST = ''
-PORT = 65432
+PORT = 65433
 
 
 ADC = np.zeros(12) # Initialize the list to hold the 12 signals
@@ -196,6 +197,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #    time.sleep((1/DataRate)-(end-start))
             #else:
             #    print("oh no!") # If code is not keeping up we have a problem
-
-        
 

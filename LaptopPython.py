@@ -14,6 +14,7 @@ HOST = "LAFL"   # Hostname
 #HOST = "127.0.0.1" # Loopback for HardwareEmulator.py
 PORT = 65432    # Port
 
+
 MAX_DATA_POINTS = 50 # 4 seconds of points
 
 ## Initialize plot

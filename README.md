@@ -9,12 +9,33 @@ Things to do
     -- Fixed 2/27/24 (Both need to be set to big/MSB first)
 - expand graph to all 12 signals
     - Code on both the pi and laptop
+    -- Fixed probably 
+        - still needs real test
 - Implement FFT code
     - A step for noise reduction
-    - common mode rejection??
-- Filtering code
-- Difference of phase code
+    -- Done for one mic 3/24/24
+        - still needs real test
+    - common mode rejection
+        - Implemented but might not be useful
+            - Time will tell
+        
+- Filtering code -- Cole
+    - Filter types
+- Difference of phase code -- Casie && Possibly Tyler
+    - I don't even know what goes into this
+    - also need code to auto align microphone offsets in code
+- Signal saving and replay with HW emulator -- Mathew
+- Box -- Robert
+
+
+FOR LATER EXPLORATION
 - UI design
+
+- Possible way to speed up code if we need full 50kHz or just more than we have
+    - Seems counter intuitive but we use a delay
+    - So instead of sending data at a rate of 50khz we save up a seconds worth of data and then send that as a bigger packet
+    - This might speed up the system b/c most of the time it taken with the network protocol. 
+        - So less protocol = more time
 
 
 1. Setting up Github Desktop
