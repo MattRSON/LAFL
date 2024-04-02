@@ -60,13 +60,14 @@ def PhaseDiff():
 
     #print(Phi)                         # Return Difference of Phase Value
 
-def phase_difference(signal1, signal2, fs):
+def phase_difference():
+    
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
 
     # Perform Fourier transforms
     fft_signal1 = np.fft.fft(value[0,:])
-    fft_signal2 = np.fft.fft(value)
+    fft_signal2 = np.fft.fft(value[1,:])
     
     # Compute phase spectra
     phase_spectrum1 = np.angle(fft_signal1)
@@ -76,10 +77,11 @@ def phase_difference(signal1, signal2, fs):
     phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
     
     # Convert phase difference to time delay (optional)
-    freq = np.fft.fftfreq(len(signal1), 1/fs)
-    time_delay = phase_diff_spectrum / (2 * np.pi * freq)
+    #freq = np.fft.fftfreq(len(value[0,:]), 1/DataRate)
+    #time_delay = phase_diff_spectrum / (2 * np.pi * freq)
     
-    return phase_diff_spectrum, time_delay
+    print(phase_diff_spectrum)
+    #print(time_delay)
 
 # Thread to receive data from PI (No Delay)
 def nodeA(pointer):

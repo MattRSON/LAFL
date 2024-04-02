@@ -25,7 +25,7 @@ i = 0 # Initialize the counter that keeps the system looping
 # Generate waveforms to send (More to come)
 for x in x_data:
     Sinewave[x] = int(((np.sin((x/DataRate)*2*(3.14)*(frequency)))+1)*2047)
-    Cosinewave[x] = int(((np.cos(((x/DataRate)+(3.14/3))*2*(3.14)*(frequency)))+1)*2047)
+    Cosinewave[x] = int((np.cos(((x/DataRate)*2*(3.14)*(frequency)))+1)*2047)
 
 # Setup socket
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the laptop has connected
