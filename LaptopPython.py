@@ -66,9 +66,10 @@ def phase_difference():
         value = data_value # Grab the most recent update
 
     # Perform Fourier transforms
-    fft_signal1 = np.fft.fft(value[0,:])
-    fft_signal2 = np.fft.fft(value[1,:])
-    
+    fft_signal1 = np.fft.rfft(value[0,:])
+    fft_signal2 = np.fft.rfft(value[1,:])
+    #print(fft_signal1)
+    #print(fft_signal2)
     # Compute phase spectra
     phase_spectrum1 = np.angle(fft_signal1)
     phase_spectrum2 = np.angle(fft_signal2)
@@ -79,7 +80,9 @@ def phase_difference():
     # Convert phase difference to time delay (optional)
     #freq = np.fft.fftfreq(len(value[0,:]), 1/DataRate)
     #time_delay = phase_diff_spectrum / (2 * np.pi * freq)
-    
+    print(phase_spectrum1)
+    print(phase_spectrum2)
+
     print(phase_diff_spectrum)
     #print(time_delay)
 
@@ -159,7 +162,7 @@ signal.signal(signal.SIGINT, signal_handler)
 #PhaseDiff_Thread.daemon = True
 #PhaseDiff_Thread.start()
 
-PhaseDiff_Thread2 = threading.Timer(10,phase_difference)
+PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
 PhaseDiff_Thread2.daemon = True
 PhaseDiff_Thread2.start()
 
