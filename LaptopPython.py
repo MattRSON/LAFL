@@ -59,6 +59,10 @@ def phase_difference():
     # Calculate phase difference spectrum
     phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
     
+    for i in range(1,len(phase_diff_spectrum)):
+        if phase_diff_spectrum[i] < 0:
+            phase_diff_spectrum[i] = phase_diff_spectrum[i] + (2 * np.pi)
+
     # Convert phase difference to time delay (optional)
     time_delay = phase_diff_spectrum[1:] / (2 * np.pi * F1[1:])
 
