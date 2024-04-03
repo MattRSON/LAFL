@@ -12,13 +12,13 @@ HOST = '' # Hostname
 PORT = 65432 # Port
 
 # User Variables
-frequency = 1000 
+frequency = 100 
 # frequency in Hz
 DataRate = 10000
 
 
 # Fixed Variables
-ADC = np.zeros(12) # Initialize the list to hold the 12 signals
+ADC = np.zeros(12, dtype=int) # Initialize the list to hold the 12 signals
 points = int(DataRate*(1/frequency)) # Generates the list of points based on freqency and sample rate
 #points = 10
 Sinewave = np.zeros(points) # Initialize the list for a sine wave
@@ -46,7 +46,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             # Sets all the signals the the value that should be sent
             ADC[0] = Sinewave[i]
             ADC[1] = Cosinewave[i]
-            ADC[2] = x_data[i]
+            ADC[2] = 4095
             ADC[3] = 4095
             ADC[4] = 4095
             ADC[5] = 4095

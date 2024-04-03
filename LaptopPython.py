@@ -10,6 +10,7 @@ import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
+import struct
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -33,17 +34,9 @@ def nodeA():
 
     while len(packet) == 0:
         packet = s.recv(48)
-    start = timer()
 
     vals = struct.unpack("!12I", packet)
 
-    end = timer()
-
-    if (end-start) < (1/DataRate):
-        time.sleep((1/DataRate)-(end-start))
-    else:
-        print("oh no!") # If code is not keeping up we have a problem
-        print(end-start)
 
     return np.array(vals) # Update it
 
