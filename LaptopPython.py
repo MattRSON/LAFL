@@ -27,26 +27,25 @@ value = np.zeros((12,MAX_DATA_POINTS))
 writepointer = 0
 
 # Thread to receive data from PI (No Delay)
-def nodeA(pointer):
+def nodeA():
     
-    packet = s.recv(48)
-    bigint = int.from_bytes(packet,"little")
-    value[0,pointer] = bigint & 0xffffffff
-    value[1,pointer] = (bigint >> 32) & 0xffffffff
-    value[2,pointer] = (bigint >> 64) & 0xffffffff
-    value[3,pointer] = (bigint >> 96) & 0xffffffff
-    value[4,pointer] = (bigint >> 128) & 0xffffffff
-    value[5,pointer] = (bigint >> 160) & 0xffffffff
-    value[6,pointer] = (bigint >> 192) & 0xffffffff
-    value[7,pointer] = (bigint >> 224) & 0xffffffff
-    value[8,pointer] = (bigint >> 256) & 0xffffffff
-    value[9,pointer] = (bigint >> 288) & 0xffffffff
-    value[10,pointer] = (bigint >> 320) & 0xffffffff
-    value[11,pointer] = (bigint >> 352) & 0xffffffff
+    packet = b''
 
-    pointer = (pointer + 1) % MAX_DATA_POINTS
+    while len(packet) == 0:
+        packet = s.recv(48)
+    start = timer()
 
-    return(value, pointer) # Update it
+    vals = struct.unpack("!12I", packet)
+
+    end = timer()
+
+    if (end-start) < (1/DataRate):
+        time.sleep((1/DataRate)-(end-start))
+    else:
+        print("oh no!") # If code is not keeping up we have a problem
+        print(end-start)
+
+    return np.array(vals) # Update it
 
 def phase_difference():
     
@@ -119,4 +118,8 @@ PhaseDiff_Thread2.start()
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
         s.connect((HOST, PORT)) # Tries to connect to the server   
         while True:
-            data_value, writepointer = nodeA(writepointer)
+            tmp = nodeA()
+            with data_lock: # If the thread has control of the variables
+                # Filtering goes here (likely?)               
+                data_value[:, writepointer] = tmp
+                writepointer = (writepointer + 1) % MAX_DATA_POINTS

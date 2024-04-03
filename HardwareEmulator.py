@@ -5,13 +5,15 @@ import socket # For network connection
 import time # Used for delaying the code to keep it on time
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer # Used to time the code to calculate the delay
+import struct
 
 ## Setting up the network with the name of computer and what port its sending data on
 HOST = '' # Hostname
 PORT = 65432 # Port
 
 # User Variables
-frequency = 1000 # frequency in Hz
+frequency = 1000 
+# frequency in Hz
 DataRate = 10000
 
 
@@ -55,15 +57,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             ADC[10] = 4095
             ADC[11] = 4095
 
-            # Increment the counter to keep the wave progressing
-            i+=1
-
-            # If the counter goes out of bounds then reset it
-            if i>=(points):
-                i = 0
+            # Increment the counter to keep the wave progressing and if the counter goes out of bounds then reset it
+            i = (i + 1) % points
             
             # Send all the data over the network as 32bit ints
-            conn.sendall(bytes(ADC.astype(int)))
+            conn.sendall(struct.pack("!12I", ADC[0],ADC[1],ADC[2],ADC[3],ADC[4],ADC[5],ADC[6],ADC[7],ADC[8],ADC[9],ADC[10],ADC[11]))
             end = timer() # Grabs the end time of the script
 
             # Delays based on how long it took to run the code.
