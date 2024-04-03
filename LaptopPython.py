@@ -1,4 +1,5 @@
-# Written my Jai Bhullar and Mathew Rawson
+# Written by Mathew Rawson, Samuel Myers, Tyler LeMoine, Caise Taylor, and Robert Volkmann
+# With assistance from Jai Bhullar of the Cyber Security and Computer Science department
 
 import socket # For network connection
 import threading # For threading used for plot
@@ -9,8 +10,6 @@ import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
-import time
-#from sklearn.preprocessing import StandardScaler
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -18,7 +17,6 @@ HOST = "127.0.0.1" # Loopback for HardwareEmulator.py
 PORT = 65432    # Port
 
 MAX_DATA_POINTS = 10000
-GRAPHED_DATA_POINTS = 64
 
 DataRate = 10000 #Hz
 
@@ -28,50 +26,9 @@ data_value = np.zeros((12,MAX_DATA_POINTS)) # Initializes the global data variab
 value = np.zeros((12,MAX_DATA_POINTS))
 writepointer = 0
 
-def phase_difference():
-    
-    with data_lock: # If the thread has control of the variable
-        value = data_value # Grab the most recent update
-
-    # add linear to circular and use node-fft
-
-
-    # Perform Fourier transforms
-    fft_signal1 = np.fft.rfft(value[0,:])
-    fft_signal2 = np.fft.rfft(value[1,:])
-    #print(fft_signal1)
-    #print(fft_signal2)
-    # Compute phase spectra
-    phase_spectrum1 = np.angle(fft_signal1)
-    phase_spectrum2 = np.angle(fft_signal2)
-    
-    # Test mask for the signals
-    threshold_spectrum1 = 0.5 * max(abs(fft_signal1))
-    mask1 = fft_signal1 > threshold_spectrum1
-    peaks1 = phase_spectrum1[mask1]
-    print(peaks1)
-    threshold_spectrum2 = 0.5 * max(abs(fft_signal2))
-    mask2 = fft_signal2 > threshold_spectrum2
-    peaks2 = phase_spectrum2[mask2]
-    print(peaks2)
-
-    # Calculate phase difference spectrum
-    phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
-    
-    # Convert phase difference to time delay (optional)
-    #freq = np.fft.fftfreq(len(value[0,:]), 1/DataRate)
-    #time_delay = phase_diff_spectrum / (2 * np.pi * freq)
-
-    #print(phase_spectrum1)
-    #print(phase_spectrum2)
-    #print(phase_diff_spectrum)
-
-    #print(time_delay)
-
 # Thread to receive data from PI (No Delay)
 def nodeA(pointer):
     
-    start = timer()
     packet = s.recv(48)
     bigint = int.from_bytes(packet,"little")
     value[0,pointer] = bigint & 0xffffffff
@@ -88,45 +45,63 @@ def nodeA(pointer):
     value[11,pointer] = (bigint >> 352) & 0xffffffff
 
     pointer = (pointer + 1) % MAX_DATA_POINTS
-    end = timer()
-
-    if (end-start) < (1/DataRate):
-        time.sleep((1/DataRate)-(end-start))
-    #else:
-    #    print("oh no!") # If code is not keeping up we have a problem
 
     return(value, pointer) # Update it
 
-def nodeFFT():
-
+def phase_difference():
+    
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
+
+    # add linear to circular and use node-fft
+    Signal1 = circular2linear(writepointer,value[0,:])
+    Signal2 = circular2linear(writepointer,value[1,:])
+
+    F1, D1 = nodeFFT(Signal1, DataRate)
+    F2, D2 = nodeFFT(Signal2, DataRate)
+   
+    # Compute phase spectra
+    phase_spectrum1 = np.angle(D1)
+    phase_spectrum2 = np.angle(D2)
+
+    # Calculate phase difference spectrum
+    phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
+    
+    # Convert phase difference to time delay (optional)
+    #time_delay = phase_diff_spectrum / (2 * np.pi * F1)
+
+    #print(phase_spectrum1)
+    #print(phase_spectrum2)
+    print(phase_diff_spectrum)
+
+    #print(time_delay)
+
+    PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
+    PhaseDiff_Thread2.daemon = True
+    PhaseDiff_Thread2.start()
+
+def nodeFFT(array,sampleRate):
+
     # Sets up a temp list that takes dat from the circular buffer and puts it in order
 
-    mic1 = circular2linear(writepointer, value[0,:])
-    
-
     # Takes the real FFT of the data
-    Fdomain = abs(np.fft.rfft(mic1))
-    Frequency = np.fft.rfftfreq(mic1.size,1/DataRate)
+    Fdomain = np.fft.rfft(array)
+    Frequency = np.fft.rfftfreq(np.size(array),1/sampleRate)
 
     # Finds the strongest frequencies
     threshold = 0.5 * max(abs(Fdomain))
-    mask = Fdomain > threshold
-    peaks = Frequency[mask]
-    print(peaks)
+    mask = abs(Fdomain) > threshold
+    Fpeaks = Frequency[mask]
+    Dpeaks = Fdomain[mask]
 
-    # Sets the thread to run again in 10 seconds
-    FFT_Thread = threading.Timer(5,nodeFFT)
-    FFT_Thread.daemon = True
-    FFT_Thread.start()
+    return(Fpeaks,Dpeaks)
 
-# rearanges a circular buffer into a linear one give the new 2 old pointer
-def circular2linear(pointer, array):
+
+# rearranges a circular buffer into a linear one give the new 2 old pointer
+def circular2linear(index, array):
     size = np.size(array)
     tempValue = np.zeros(size)
-    tempValue[0:pointer-1] = np.flipud(value[0,0:pointer-1])
-    tempValue[pointer:size] = np.flipud(value[0,pointer:size])
+    tempValue = np.hstack((array[index:], array[:index]))
     return tempValue
 
 # Function to shutdown script safely
@@ -136,14 +111,10 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-FFT_Thread = threading.Timer(5,nodeFFT)
-FFT_Thread.daemon = True
-FFT_Thread.start()
 
-
-#PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
-#PhaseDiff_Thread2.daemon = True
-#PhaseDiff_Thread2.start()
+PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
+PhaseDiff_Thread2.daemon = True
+PhaseDiff_Thread2.start()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
         s.connect((HOST, PORT)) # Tries to connect to the server   

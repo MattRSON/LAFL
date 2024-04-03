@@ -1,3 +1,6 @@
+# Written by Mathew Rawson, Samuel Myers, Tyler LeMoine, Caise Taylor, and Robert Volkmann
+# With assistance from Jai Bhullar of the Cyber Security and Computer Science department
+
 import socket # For network connection
 import time # Used for delaying the code to keep it on time
 import numpy as np # For extra number manipulation
@@ -8,13 +11,14 @@ HOST = '' # Hostname
 PORT = 65432 # Port
 
 # User Variables
-frequency = 100 # frequency in Hz
+frequency = 1000 # frequency in Hz
 DataRate = 10000
 
 
 # Fixed Variables
 ADC = np.zeros(12) # Initialize the list to hold the 12 signals
 points = int(DataRate*(1/frequency)) # Generates the list of points based on freqency and sample rate
+#points = 10
 Sinewave = np.zeros(points) # Initialize the list for a sine wave
 Cosinewave = np.zeros(points) # Initialize the list for a cosine wave
 x_data = range(points) # Generates the list of x points for all waveforms
@@ -40,7 +44,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             # Sets all the signals the the value that should be sent
             ADC[0] = Sinewave[i]
             ADC[1] = Cosinewave[i]
-            ADC[2] = 4095
+            ADC[2] = x_data[i]
             ADC[3] = 4095
             ADC[4] = 4095
             ADC[5] = 4095

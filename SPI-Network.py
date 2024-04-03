@@ -1,3 +1,6 @@
+# Written by Mathew Rawson, Samuel Myers, Tyler LeMoine, Caise Taylor, and Robert Volkmann
+# With assistance from Jai Bhullar of the Cyber Security and Computer Science department
+
 # Imports Libraries
 import spidev
 import RPi.GPIO as GPIO
