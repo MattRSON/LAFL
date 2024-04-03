@@ -60,13 +60,13 @@ def phase_difference():
     phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
     
     # Convert phase difference to time delay (optional)
-    #time_delay = phase_diff_spectrum / (2 * np.pi * F1)
+    time_delay = phase_diff_spectrum[1:] / (2 * np.pi * F1[1:])
 
     #print(phase_spectrum1)
     #print(phase_spectrum2)
     print(phase_diff_spectrum)
 
-    #print(time_delay)
+    print(time_delay)
 
     PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
     PhaseDiff_Thread2.daemon = True
