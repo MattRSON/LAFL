@@ -28,42 +28,13 @@ data_value = np.zeros((12,MAX_DATA_POINTS)) # Initializes the global data variab
 value = np.zeros((12,MAX_DATA_POINTS))
 writepointer = 0
 
-# Difference of phase function
-def PhaseDiff():
-    with data_lock: # If the thread has control of the variable
-        value = data_value # Grab the most recent update
-
-    # Sets up a temp list that takes dat from the circular buffer and puts it in order
-    tempData = np.zeros((MAX_DATA_POINTS,2))
-    tempData[:,0] = circular2linear(writepointer, value[0,:])
-    tempData[:,1] = circular2linear(writepointer, value[1,:])
-
-    StandardData = np.zeros((MAX_DATA_POINTS,2))            # Create an array for calculation
-    DataMean1 = np.mean(tempData[:,0])                      # Find the mean of the first signal
-    Max1 = max(abs(tempData[:,0] - DataMean1))              # Find the maximum value
-    StandardData[:,0] = (tempData[:,0] - DataMean1) / Max1  # Standardized data --> Unit gain
-
-    DataMean2 = np.mean(tempData[:,1])                      # Repeat process above for second signal
-    Max2 = max(abs(tempData[:,1] - DataMean2))
-    StandardData[:,1] = (tempData[:,1] - DataMean2) / Max2
-    #print(StandardData)
-
-    c = np.cov(np.transpose(StandardData))                  # Transpose the data and find the covariance
-    #print(c)
-    Phi = np.arccos(c[0,1])                                 # Calculate phase value
-    #print("hi :)")                      # Completely Necessary Code...
-
-
-    #PhaseDiff_Thread = threading.Timer(10,PhaseDiff)
-    #PhaseDiff_Thread.daemon = True
-    #PhaseDiff_Thread.start()
-
-    #print(Phi)                         # Return Difference of Phase Value
-
 def phase_difference():
     
     with data_lock: # If the thread has control of the variable
         value = data_value # Grab the most recent update
+
+    # add linear to circular and use node-fft
+
 
     # Perform Fourier transforms
     fft_signal1 = np.fft.rfft(value[0,:])
@@ -126,7 +97,7 @@ def nodeFFT():
 
     # Takes the real FFT of the data
     Fdomain = abs(np.fft.rfft(mic1))
-    Frequency = np.fft.rfftfreq(mic1.size,2e-5)
+    Frequency = np.fft.rfftfreq(mic1.size,1/DataRate)
 
     # Finds the strongest frequencies
     threshold = 0.5 * max(abs(Fdomain))
@@ -135,9 +106,9 @@ def nodeFFT():
     print(peaks)
 
     # Sets the thread to run again in 10 seconds
-    #FFT_Thread = threading.Timer(10,nodeFFT)
-    #FFT_Thread.daemon = True
-    #FFT_Thread.start()
+    FFT_Thread = threading.Timer(5,nodeFFT)
+    FFT_Thread.daemon = True
+    FFT_Thread.start()
 
 # rearanges a circular buffer into a linear one give the new 2 old pointer
 def circular2linear(pointer, array):
@@ -154,17 +125,14 @@ def signal_handler(sig, frame):
 
 signal.signal(signal.SIGINT, signal_handler)
 
-#FFT_Thread = threading.Timer(10,nodeFFT)
-#FFT_Thread.daemon = True
-#FFT_Thread.start()
+FFT_Thread = threading.Timer(5,nodeFFT)
+FFT_Thread.daemon = True
+FFT_Thread.start()
 
-#PhaseDiff_Thread = threading.Timer(10,PhaseDiff)
-#PhaseDiff_Thread.daemon = True
-#PhaseDiff_Thread.start()
 
-PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
-PhaseDiff_Thread2.daemon = True
-PhaseDiff_Thread2.start()
+#PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
+#PhaseDiff_Thread2.daemon = True
+#PhaseDiff_Thread2.start()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
         s.connect((HOST, PORT)) # Tries to connect to the server   
