@@ -45,16 +45,27 @@ def phase_difference():
     phase_spectrum1 = np.angle(fft_signal1)
     phase_spectrum2 = np.angle(fft_signal2)
     
+    # Test mask for the signals
+    threshold_spectrum1 = 0.5 * max(abs(fft_signal1))
+    mask1 = fft_signal1 > threshold_spectrum1
+    peaks1 = phase_spectrum1[mask1]
+    print(peaks1)
+    threshold_spectrum2 = 0.5 * max(abs(fft_signal2))
+    mask2 = fft_signal2 > threshold_spectrum2
+    peaks2 = phase_spectrum2[mask2]
+    print(peaks2)
+
     # Calculate phase difference spectrum
     phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
     
     # Convert phase difference to time delay (optional)
     #freq = np.fft.fftfreq(len(value[0,:]), 1/DataRate)
     #time_delay = phase_diff_spectrum / (2 * np.pi * freq)
-    print(phase_spectrum1)
-    print(phase_spectrum2)
 
-    print(phase_diff_spectrum)
+    #print(phase_spectrum1)
+    #print(phase_spectrum2)
+    #print(phase_diff_spectrum)
+
     #print(time_delay)
 
 # Thread to receive data from PI (No Delay)
