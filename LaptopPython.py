@@ -23,6 +23,11 @@ GRAPHED_DATA_POINTS = 64
 
 DataRate = 10000 #Hz
 
+# Filter Parameters
+low_cutoff = 100 #Hz
+high_cutoff = 3000 #Hz
+order = 6
+
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
 data_value = np.zeros((12,MAX_DATA_POINTS)) # Initializes the global data variable. This is the data from the ADCs
@@ -82,7 +87,21 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 # Function for Butterworth lowpass filtering
-#def 
+def butterworth_coef(cutoff, fs, order=5):
+    # Calculate Parameters
+    nyq= 0.5*fs
+    normal_cutoff = cutoff/nyq
+    # Plug parameters into butter to return coefficents for filter
+    sos = butter(order, normal_cutoff, btype='low', analog=False, output='sos')
+    return sos
+
+# Call this function for filtering
+def butter_filter(data, cutoff, fs, order=5):
+    # Calls function to find the filter coefficents
+    sos = butterworth_coef(cutoff, fs, order=order)
+    # Uses filter coefs to filter the data
+    filtered = sosfilt(sos, data)
+    return filtered
 
 signal.signal(signal.SIGINT, signal_handler)
 
@@ -95,8 +114,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
         while True:
             tmp = nodeA()
             with data_lock: # If the thread has control of the variables
-                # Filtering goes here (likely?)
-                
+                # Filtering goes here 
+                filtered_data = butter_filter(tmp, high_cutoff, DataRate, order)
+
+
                 data_value[:, writepointer] = tmp
                 writepointer = (writepointer + 1) % MAX_DATA_POINTS
                 

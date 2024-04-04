@@ -56,9 +56,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             i = (i + 1) % points
 
             # Send all the data over the network as 32bit ints
-            print("this is alive")
+            #print("this is alive")
             conn.sendall(struct.pack("!12I", ADC[0],ADC[1],ADC[2],ADC[3],ADC[4],ADC[5],ADC[6],ADC[7],ADC[8],ADC[9],ADC[10],ADC[11]))
-            print("this is certainly alive")
+            #print("this is certainly alive")
             end = timer() # Grabs the end time of the script
 
             # Delays based on how long it took to run the code.
