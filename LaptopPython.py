@@ -40,14 +40,11 @@ def nodeA():
 
     return np.array(vals) # Update it
 
-def phase_difference():
+def phase_difference(input1, input2):
     
-    with data_lock: # If the thread has control of the variable
-        value = data_value # Grab the most recent update
-
     # add linear to circular and use node-fft
-    Signal1 = circular2linear(writepointer,value[0,:])
-    Signal2 = circular2linear(writepointer,value[1,:])
+    Signal1 = circular2linear(writepointer,input1)
+    Signal2 = circular2linear(writepointer,input2)
 
     F1, D1 = nodeFFT(Signal1, DataRate)
     F2, D2 = nodeFFT(Signal2, DataRate)
@@ -66,15 +63,7 @@ def phase_difference():
     # Convert phase difference to time delay (optional)
     time_delay = phase_diff_spectrum[1:] / (2 * np.pi * F1[1:])
 
-    #print(phase_spectrum1)
-    #print(phase_spectrum2)
-    print(phase_diff_spectrum)
-
-    print(time_delay)
-
-    PhaseDiff_Thread2 = threading.Timer(5,phase_difference)
-    PhaseDiff_Thread2.daemon = True
-    PhaseDiff_Thread2.start()
+    return(phase_diff_spectrum, time_delay)
 
 def nodeFFT(array,sampleRate):
 
@@ -100,6 +89,14 @@ def circular2linear(index, array):
     tempValue = np.hstack((array[index:], array[:index]))
     return tempValue
 
+def TDOA(Mic1, Mic2, Mic3, Mic4):
+    phase1, time1 = phase_difference(Mic1,Mic2)
+
+    set11 = np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2)
+    
+    
+
+    
 # Function to shutdown script safely
 def signal_handler(sig, frame):
     print("ABORTING")
