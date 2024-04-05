@@ -11,6 +11,8 @@ import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
 import struct
+import sympy as sp # Sympy for systems of equations. Used in TDOA function.
+from sympy.solvers import solve
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -92,9 +94,31 @@ def circular2linear(index, array):
 def TDOA(Mic1, Mic2, Mic3, Mic4):
     phase1, time1 = phase_difference(Mic1,Mic2)
 
-    set11 = np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2)
+    set11 = sp.Eq(np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2) - np.sqrt((x1 - mic5[0])^2 + (y1 - mic5[1])^2 + (z1 - mic5[2])^2))
+    set12 = sp.Eq(np.sqrt((x1 - mic5[0])^2 + (y1 - mic5[1])^2 + (z1 - mic5[2])^2) - np.sqrt((x1 - mic7[0])^2 + (y1 - mic7[1])^2 + (z1 - mic7[2])^2))
+    set13 = sp.Eq(np.sqrt((x1 - mic7[0])^2 + (y1 - mic7[1])^2 + (z1 - mic7[2])^2) - np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2))
     
+    set21 = sp.Eq(np.sqrt((x1 - mic6[0])^2 + (y1 - mic6[1])^2 + (z1 - mic6[2])^2) - np.sqrt((x1 - mic8[0])^2 + (y1 - mic8[1])^2 + (z1 - mic8[2])^2))
+    set22 = sp.Eq(np.sqrt((x1 - mic8[0])^2 + (y1 - mic8[1])^2 + (z1 - mic8[2])^2) - np.sqrt((x1 - mic3[0])^2 + (y1 - mic3[1])^2 + (z1 - mic3[2])^2))
+    set23 = sp.Eq(np.sqrt((x1 - mic3[0])^2 + (y1 - mic3[1])^2 + (z1 - mic3[2])^2) - np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2))
     
+    set31 = sp.Eq(np.sqrt((x1 - mic2[0])^2 + (y1 - mic2[1])^2 + (z1 - mic2[2])^2) - np.sqrt((x1 - mic4[0])^2 + (y1 - mic4[1])^2 + (z1 - mic4[2])^2))
+    set32 = sp.Eq(np.sqrt((x1 - mic4[0])^2 + (y1 - mic4[1])^2 + (z1 - mic4[2])^2) - np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2))
+    set33 = sp.Eq(np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2) - np.sqrt((x1 - mic6[0])^2 + (y1 - mic6[1])^2 + (z1 - mic6[2])^2))
+    
+    Solution1 = sp.solve([set11,set12,set13],dict=True)
+    Solution2 = sp.solve([set21,set22,set23],dict=True)
+    Solution3 = sp.solve([set31,set32,set33],dict=True)
+
+    Xposition = (Solution1[0]+Solution2[0]+Solution3[0])/3
+    Yposition = (Solution1[1]+Solution2[1]+Solution3[1])/3
+    Zposition = (Solution1[2]+Solution2[2]+Solution3[2])/3
+
+    Xpos = round(Xposition, 4)
+    Ypos = round(Yposition, 4)
+    Zpos = round(Zposition, 4)
+
+    return(Xpos,Ypos,Zpos)
 
     
 # Function to shutdown script safely
