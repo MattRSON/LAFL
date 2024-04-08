@@ -92,23 +92,43 @@ def circular2linear(index, array):
     return tempValue
 
 def TDOA(Mic1, Mic2, Mic3, Mic4):
-    phase1, time1 = phase_difference(Mic1,Mic2)
+    # Include microphone coordinate information from Sam's code here...
+    x1,y1,z1 = sp.symbols("x1,y1,z1")   # Make X1, Y1, and Z1 symbols
+    phase11, time11 = phase_difference(Mic1, Mic5)  # Find time difference for each signal
+    phase12, time12 = phase_difference(Mic1, Mic5)
+    phase13, time13 = phase_difference(Mic1, Mic5)
+    phase14, time14 = phase_difference(Mic1, Mic5)  ###### Do we need to calculate all this again here? Maybe?
+    phase21, time21 = phase_difference(Mic1, Mic5)
+    phase22, time22 = phase_difference(Mic1, Mic5)
+    phase23, time23 = phase_difference(Mic1, Mic5)
+    phase24, time24 = phase_difference(Mic1, Mic5)
+    phase31, time31 = phase_difference(Mic1, Mic5)
+    phase32, time32 = phase_difference(Mic1, Mic5)
+    phase33, time33 = phase_difference(Mic1, Mic5)
+    phase34, time34 = phase_difference(Mic1, Mic5)
 
-    set11 = sp.Eq(np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2) - np.sqrt((x1 - mic5[0])^2 + (y1 - mic5[1])^2 + (z1 - mic5[2])^2))
-    set12 = sp.Eq(np.sqrt((x1 - mic5[0])^2 + (y1 - mic5[1])^2 + (z1 - mic5[2])^2) - np.sqrt((x1 - mic7[0])^2 + (y1 - mic7[1])^2 + (z1 - mic7[2])^2))
-    set13 = sp.Eq(np.sqrt((x1 - mic7[0])^2 + (y1 - mic7[1])^2 + (z1 - mic7[2])^2) - np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2))
-    
-    set21 = sp.Eq(np.sqrt((x1 - mic6[0])^2 + (y1 - mic6[1])^2 + (z1 - mic6[2])^2) - np.sqrt((x1 - mic8[0])^2 + (y1 - mic8[1])^2 + (z1 - mic8[2])^2))
-    set22 = sp.Eq(np.sqrt((x1 - mic8[0])^2 + (y1 - mic8[1])^2 + (z1 - mic8[2])^2) - np.sqrt((x1 - mic3[0])^2 + (y1 - mic3[1])^2 + (z1 - mic3[2])^2))
-    set23 = sp.Eq(np.sqrt((x1 - mic3[0])^2 + (y1 - mic3[1])^2 + (z1 - mic3[2])^2) - np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2))
-    
-    set31 = sp.Eq(np.sqrt((x1 - mic2[0])^2 + (y1 - mic2[1])^2 + (z1 - mic2[2])^2) - np.sqrt((x1 - mic4[0])^2 + (y1 - mic4[1])^2 + (z1 - mic4[2])^2))
-    set32 = sp.Eq(np.sqrt((x1 - mic4[0])^2 + (y1 - mic4[1])^2 + (z1 - mic4[2])^2) - np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2))
-    set33 = sp.Eq(np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2) - np.sqrt((x1 - mic6[0])^2 + (y1 - mic6[1])^2 + (z1 - mic6[2])^2))
-    
-    Solution1 = sp.solve([set11,set12,set13],dict=True)
-    Solution2 = sp.solve([set21,set22,set23],dict=True)
-    Solution3 = sp.solve([set31,set32,set33],dict=True)
+    timediffArray = [time11,time12,time13,time14,time21,time22,time23,time24,time31,time32,time33,time34]
+    minVal = min(timediffArray)
+    SpeedOfSound = 1    # I don't know what the speed of sound is for us??????? help
+
+    set11 = sp.Eq(np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2) - np.sqrt((x1 - mic5[0])^2 + (y1 - mic5[1])^2 + (z1 - mic5[2])^2) - (SpeedOfSound*time11))
+    set12 = sp.Eq(np.sqrt((x1 - mic5[0])^2 + (y1 - mic5[1])^2 + (z1 - mic5[2])^2) - np.sqrt((x1 - mic7[0])^2 + (y1 - mic7[1])^2 + (z1 - mic7[2])^2) - (SpeedOfSound*time12))
+    set13 = sp.Eq(np.sqrt((x1 - mic7[0])^2 + (y1 - mic7[1])^2 + (z1 - mic7[2])^2) - np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2) - (SpeedOfSound*time13))
+    set14 = sp.Eq(np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2) - np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2) - (SpeedOfSound*time14))
+
+    set21 = sp.Eq(np.sqrt((x1 - mic6[0])^2 + (y1 - mic6[1])^2 + (z1 - mic6[2])^2) - np.sqrt((x1 - mic8[0])^2 + (y1 - mic8[1])^2 + (z1 - mic8[2])^2) - (SpeedOfSound*time21))
+    set22 = sp.Eq(np.sqrt((x1 - mic8[0])^2 + (y1 - mic8[1])^2 + (z1 - mic8[2])^2) - np.sqrt((x1 - mic3[0])^2 + (y1 - mic3[1])^2 + (z1 - mic3[2])^2) - (SpeedOfSound*time22))
+    set23 = sp.Eq(np.sqrt((x1 - mic3[0])^2 + (y1 - mic3[1])^2 + (z1 - mic3[2])^2) - np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2) - (SpeedOfSound*time23))
+    set24 = sp.Eq(np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2) - np.sqrt((x1 - mic6[0])^2 + (y1 - mic6[1])^2 + (z1 - mic6[2])^2) - (SpeedOfSound*time24))
+
+    set31 = sp.Eq(np.sqrt((x1 - mic2[0])^2 + (y1 - mic2[1])^2 + (z1 - mic2[2])^2) - np.sqrt((x1 - mic4[0])^2 + (y1 - mic4[1])^2 + (z1 - mic4[2])^2) - (SpeedOfSound*time31))
+    set32 = sp.Eq(np.sqrt((x1 - mic4[0])^2 + (y1 - mic4[1])^2 + (z1 - mic4[2])^2) - np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2) - (SpeedOfSound*time32))
+    set33 = sp.Eq(np.sqrt((x1 - mic9[0])^2 + (y1 - mic9[1])^2 + (z1 - mic9[2])^2) - np.sqrt((x1 - mic6[0])^2 + (y1 - mic6[1])^2 + (z1 - mic6[2])^2) - (SpeedOfSound*time33))
+    set34 = sp.Eq(np.sqrt((x1 - mic3[0])^2 + (y1 - mic3[1])^2 + (z1 - mic3[2])^2) - np.sqrt((x1 - mic1[0])^2 + (y1 - mic1[1])^2 + (z1 - mic1[2])^2) - (SpeedOfSound*time34))
+
+    Solution1 = sp.solve([set11,set12,set13,set14],[x1,y1,z1],dict=True)    # Note to future self: check sp.solve to see how it outputs the answers... 
+    Solution2 = sp.solve([set21,set22,set23,set24],[x1,y1,z1],dict=True)    # I think this is correct, unless x1 has multiple answers (eg. x^2 -4 = [-2,2])
+    Solution3 = sp.solve([set31,set32,set33,set34],[x1,y1,z1],dict=True)
 
     Xposition = (Solution1[0]+Solution2[0]+Solution3[0])/3
     Yposition = (Solution1[1]+Solution2[1]+Solution3[1])/3
