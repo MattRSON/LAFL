@@ -103,6 +103,22 @@ def butter_filter(data, cutoff, fs, order=5):
     filtered = sosfilt(sos, data)
     return filtered
 
+
+# For testing this heres some parameters
+array_size = 50
+spacing = 0.2 # meter
+# Function for Microphone placements
+def array_place(array_size, spacing):
+    # Find midpoint of array
+    zed = 1
+    middle = array_size/2
+    # Total of 12 mics (1-4, 5-8, 9-12, 1 group for each arm)
+    sd = numpy.sin(numpy.pi/3)
+    cd = numpy.cos(numpy.pi/3)
+    positions = np.array([[-spacing,0,zed],[-2*spacing,0,zed],[-3*spacing,0,zed],[-4*spacing,0,zed], [cd*spacing,sd*spacing,zed],[2*cd*spacing,2*sd*spacing,zed],[3*cd*spacing,3*sd*spacing,zed],[4*cd*spacing,4*sd*spacing,zed], [cd*spacing,-1*sd*spacing,zed],[2*cd*spacing,-2*sd*spacing,zed],[3*cd*spacing,-3*sd*spacing,zed],[4*cd*spacing,-4*sd*spacing,zed]])
+
+    return positions
+
 signal.signal(signal.SIGINT, signal_handler)
 
 FFT_Thread = threading.Timer(10,nodeFFT)
