@@ -99,7 +99,7 @@ def TDOA(Mic1, Mic2, Mic3, Mic4):
     x1,y1,z1,x2,y2,z2,x3,y3,z3 = sp.symbols("x1,y1,z1,x2,y2,z2,x3,y3,z3")   # Make X1-3, Y1-3, and Z1-3 symbols
     phase11, time11 = phase_difference(Mic1, Mic5)  # Find time difference for each signal
     phase12, time12 = phase_difference(Mic1, Mic5)
-    phase13, time13 = phase_difference(Mic1, Mic5)
+    phase13, time13 = phase_difference(Mic1, Mic5)  #### This needs to match case with the set equations
     phase14, time14 = phase_difference(Mic1, Mic5)  ###### Do we need to calculate all this again here? Maybe?
     phase21, time21 = phase_difference(Mic1, Mic5)
     phase22, time22 = phase_difference(Mic1, Mic5)
