@@ -70,7 +70,7 @@ spi.mode = 0
 
 # Setup tcp server
 HOST = ''
-PORT = 65433
+PORT = 65432
 
 
 ADC = np.zeros(12) # Initialize the list to hold the 12 signals
@@ -146,10 +146,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             ADC[10] = Data[0]*256+Data[1]
             GPIO.output(Select11, GPIO.HIGH)
 
-            #GPIO.output(Select12, GPIO.LOW)
-            #Data = spi.readbytes(2)
-            #ADC[11] = Data[0]*256+Data[1]
-            #GPIO.output(Select12, GPIO.HIGH)
+            GPIO.output(Select12, GPIO.LOW)
+            Data = spi.readbytes(2)
+            ADC[11] = Data[0]*256+Data[1]
+            GPIO.output(Select12, GPIO.HIGH)
 
             #ADC[1] = 0
             #ADC[2] = 0
@@ -161,7 +161,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #ADC[8] = 0
             #ADC[9] = 0
             #ADC[10] = 0
-            ADC[11] = 0
+            #ADC[11] = 0
             
             print(ADC)
 
