@@ -14,6 +14,8 @@ Things to do
     - common mode rejection??
 - Filtering code
 - Difference of phase code
+    -- Difference of phase code done?
+    -- TDOA code needs x1, y1, z1, and micX[] variables defined
 - UI design
 
 

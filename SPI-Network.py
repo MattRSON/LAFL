@@ -1,3 +1,6 @@
+# Written by Mathew Rawson, Samuel Myers, Tyler LeMoine, Caise Taylor, and Robert Volkmann
+# With assistance from Jai Bhullar of the Cyber Security and Computer Science department
+
 # Imports Libraries
 import spidev
 import RPi.GPIO as GPIO
@@ -151,4 +154,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 time.sleep((1/50000)-(end-start))
             else:
                 print("oh no!") # If code is not keeping up we have a problem
-
