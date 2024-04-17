@@ -10,9 +10,12 @@ import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
+import time
 import struct
+from scipy.signal import butter, sosfilt # Functions for applying a lowpass butterworth
 import sympy as sp # Sympy for systems of equations. Used in TDOA function.
 from sympy.solvers import solve
+
 
 ## Setting up the network with the name of computer and what port its sending data on
 #HOST = "LAFL"   # Hostname
@@ -23,6 +26,11 @@ MAX_DATA_POINTS = 10000
 
 DataRate = 10000 #Hz
 
+# Filter Parameters
+low_cutoff = 100 #Hz
+high_cutoff = 3000 #Hz
+order = 6
+
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
 data_value = np.zeros((12,MAX_DATA_POINTS)) # Initializes the global data variable. This is the data from the ADCs
@@ -31,7 +39,6 @@ writepointer = 0
 
 # Thread to receive data from PI (No Delay)
 def nodeA():
-    
     packet = b''
 
     while len(packet) == 0:
@@ -68,8 +75,6 @@ def phase_difference(input1, input2):
     return(phase_diff_spectrum, time_delay)
 
 def nodeFFT(array,sampleRate):
-
-    # Sets up a temp list that takes dat from the circular buffer and puts it in order
 
     # Takes the real FFT of the data
     Fdomain = np.fft.rfft(array)
@@ -150,6 +155,41 @@ def signal_handler(sig, frame):
     print("ABORTING")
     sys.exit(0)
 
+# Function for Butterworth lowpass filtering
+def butterworth_coef(cutoff, fs, order=5):
+    # Calculate Parameters
+    nyq= 0.5*fs
+    normal_cutoff = cutoff/nyq
+    # Plug parameters into butter to return coefficents for filter
+    sos = butter(order, normal_cutoff, btype='low', analog=False, output='sos')
+    return sos
+
+# Call this function for filtering
+def butter_filter(data, cutoff, fs, order=5):
+    # Calls function to find the filter coefficents
+    sos = butterworth_coef(cutoff, fs, order=order)
+    # Uses filter coefs to filter the data
+    filtered = sosfilt(sos, data)
+    return filtered
+
+
+# For testing this heres some parameters
+array_size = 50
+# Array spacing from simulations 0.057 for 3k? and 0.0858 for 2k. so those are essentially cm
+spacing = 0.2 # meter
+
+# Function for Microphone placements
+def array_place(array_size, spacing):
+    # Find midpoint of array
+    zed = 1
+    middle = array_size/2
+    # Total of 12 mics (1-4, 5-8, 9-12, 1 group for each arm)
+    sd = np.sin(np.pi/3)
+    cd = np.cos(np.pi/3)
+    positions = np.array([[middle-spacing,0,zed],[middle-2*spacing,0,zed],[middle-3*spacing,0,zed],[middle-4*spacing,0,zed], [middle+cd*spacing,middle+sd*spacing,zed],[middle+2*cd*spacing,middle+2*sd*spacing,zed],[middle+3*cd*spacing,middle+3*sd*spacing,zed],[middle+4*cd*spacing,middle+4*sd*spacing,zed], [middle+cd*spacing,middle-1*sd*spacing,zed],[middle+2*cd*spacing,middle-2*sd*spacing,zed],[middle+3*cd*spacing,middle-3*sd*spacing,zed],[middle+4*cd*spacing,middle-4*sd*spacing,zed]])
+
+    return positions
+
 signal.signal(signal.SIGINT, signal_handler)
 
 
@@ -162,6 +202,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
         while True:
             tmp = nodeA()
             with data_lock: # If the thread has control of the variables
-                # Filtering goes here (likely?)               
+                # Filtering goes here 
+                filtered_data = butter_filter(tmp, high_cutoff, DataRate, order)
+
+
                 data_value[:, writepointer] = tmp
                 writepointer = (writepointer + 1) % MAX_DATA_POINTS
+               

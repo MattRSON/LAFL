@@ -18,9 +18,11 @@ DataRate = 10000
 
 
 # Fixed Variables
+DataRate = 10000
+
 ADC = np.zeros(12, dtype=int) # Initialize the list to hold the 12 signals
 points = int(DataRate*(1/frequency)) # Generates the list of points based on freqency and sample rate
-#points = 10
+
 Sinewave = np.zeros(points) # Initialize the list for a sine wave
 Cosinewave = np.zeros(points) # Initialize the list for a cosine wave
 x_data = range(points) # Generates the list of x points for all waveforms
@@ -68,4 +70,4 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if 
             # This keeps the code running at the 50ksps rate
             if (end-start) < (1/DataRate):
                 time.sleep((1/DataRate)-(end-start))
-            
+          
