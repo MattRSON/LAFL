@@ -163,7 +163,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #ADC[10] = 0
             #ADC[11] = 0
             
-            print(ADC)
+            #print(ADC)
 
             archive[:,counter] = ADC
             counter += 1

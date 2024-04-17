@@ -84,7 +84,7 @@ def nodeA():
             value[9] = (bigint >> 288) & 0xffffffff
             value[10] = (bigint >> 320) & 0xffffffff
             value[11] = (bigint >> 352) & 0xffffffff
-            print(value)
+            #print(value)
             with data_lock: # If this thread has control of the variable 
                 data_value = value # Update it
 
