@@ -10,11 +10,13 @@ import signal # Used to safe shutdown the script
 import sys # Also used to safe shutdown the script
 import numpy as np # For extra number manipulation
 from timeit import default_timer as timer
-import time
+#import time
 import struct
 from scipy.signal import butter, sosfilt # Functions for applying a lowpass butterworth
 import sympy as sp # Sympy for systems of equations. Used in TDOA function.
-from sympy.solvers import solve
+#from sympy.solvers import solve
+#from sympy.abc import x,y,z
+from scipy.optimize import minimize
 
 
 ## Setting up the network with the name of computer and what port its sending data on
@@ -24,30 +26,34 @@ PORT = 65432    # Port
 
 MAX_DATA_POINTS = 10000
 
-DataRate = 10000 #Hz
+DataRate = 7400 #Hz
 
-# Filter Parameters
-low_cutoff = 100 #Hz
-high_cutoff = 3000 #Hz
-order = 6
+fig = plt.figure()
+ax = fig.add_subplot(projection='3d')
 
 # Global Data Lock
 data_lock = threading.Lock() # Prevents both threads from trying to modify a variable at the same time
 data_value = np.zeros((12,MAX_DATA_POINTS)) # Initializes the global data variable. This is the data from the ADCs
-value = np.zeros((12,MAX_DATA_POINTS))
+#value = np.zeros((12,MAX_DATA_POINTS))
 writepointer = 0
 
 # Thread to receive data from PI (No Delay)
 def nodeA():
-    packet = b''
+    global data_value
+    global writepointer
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
+        s.connect((HOST, PORT)) # Tries to connect to the server   
+        while True:
+            packet = b''
 
-    while len(packet) == 0:
-        packet = s.recv(48)
+            while len(packet) == 0:
+                packet = s.recv(48)
 
-    vals = struct.unpack("!12I", packet)
+            vals = struct.unpack("!12I", packet)
 
-
-    return np.array(vals) # Update it
+            with data_lock: # If the thread has control of the variables             
+                data_value[:, writepointer] = np.array(vals)
+                writepointer = (writepointer + 1) % MAX_DATA_POINTS
 
 def phase_difference(input1, input2):
     
@@ -55,19 +61,27 @@ def phase_difference(input1, input2):
     F1, D1 = nodeFFT(input1, DataRate)
     F2, D2 = nodeFFT(input2, DataRate)
    
+    # grab only the most prominent frequency 
+    MaxD1 = np.max(D1)
+    IndmaxD1 = np.where(D1 == MaxD1)[0][0]
+
     # Compute phase spectra
-    phase_spectrum1 = np.angle(D1)
-    phase_spectrum2 = np.angle(D2)
+    phase_spectrum1 = np.angle(D1[IndmaxD1])
+    phase_spectrum2 = np.angle(D2[IndmaxD1])
 
     # Calculate phase difference spectrum
     phase_diff_spectrum = phase_spectrum1 - phase_spectrum2
     
-    for i in range(1,len(phase_diff_spectrum)):
-        if phase_diff_spectrum[i] < 0:
-            phase_diff_spectrum[i] = phase_diff_spectrum[i] + (2 * np.pi)
+    
+    if phase_diff_spectrum < 0:
+        phase_diff_spectrum = phase_diff_spectrum + (2 * np.pi)
 
     # Convert phase difference to time delay (optional)
-    time_delay = phase_diff_spectrum[1:] / (2 * np.pi * F1[1:])
+    if F1[IndmaxD1] > 0:
+        time_delay = phase_diff_spectrum / (2 * np.pi * F1[IndmaxD1])
+        print(F1[IndmaxD1], F2[IndmaxD1])
+    else:
+        time_delay = 0
 
     return(phase_diff_spectrum, time_delay)
 
@@ -78,12 +92,14 @@ def nodeFFT(array,sampleRate):
     Frequency = np.fft.rfftfreq(np.size(array),1/sampleRate)
 
     # Finds the strongest frequencies
-    threshold = 0.5 * max(abs(Fdomain))
-    mask = abs(Fdomain) > threshold
-    Fpeaks = Frequency[mask]
-    Dpeaks = Fdomain[mask]
-    print(Fpeaks)
-    return(Fpeaks,Dpeaks)
+    #threshold = .99 * max(abs(Fdomain))
+    #print(threshold)
+    #mask = abs(Fdomain) > threshold
+    #print(mask)
+    #Fpeaks = Frequency[mask]
+    #Dpeaks = Fdomain[mask]
+    #print(Fpeaks)
+    return(Frequency,Fdomain)
 
 
 # rearranges a circular buffer into a linear one give the new 2 old pointer
@@ -93,6 +109,16 @@ def circular2linear(index, array):
     tempValue = np.hstack((array[index:], array[:index]))
     return tempValue
 
+def equation(coords, Locations, relativeTime, SpeedOfSound):
+    x1, y1, z1 = coords
+    term1 = ((x1 - Locations[0][0])**2 + (y1 - Locations[0][1])**2 + (z1 - Locations[0][2])**2)**0.5
+    term2 = ((x1 - Locations[1][0])**2 + (y1 - Locations[1][1])**2 + (z1 - Locations[1][2])**2)**0.5
+    #print(term1)
+    #print(term2)
+    #print(SpeedOfSound * (relativeTime[0] - relativeTime[1]))
+    #print(term1 - term2 - SpeedOfSound * (relativeTime[0] - relativeTime[1]))
+    return term1 - term2 - SpeedOfSound * (relativeTime[0] - relativeTime[1])
+
 def TDOA(Data, pointer, Inputs):
     # add linear to circular and use node-fft
     FixedInput1 = circular2linear(pointer,Data[Inputs[0]-1])
@@ -100,15 +126,18 @@ def TDOA(Data, pointer, Inputs):
     FixedInput3 = circular2linear(pointer,Data[Inputs[2]-1])
     FixedInput4 = circular2linear(pointer,Data[Inputs[3]-1])
 
+    filteredInput1 = butter_filter(FixedInput1)
+    filteredInput2 = butter_filter(FixedInput2)
+    filteredInput3 = butter_filter(FixedInput3)
+    filteredInput4 = butter_filter(FixedInput4)
+
     SpeedOfSound = 345                                  # Speed of sound at high altitude in m/s
-    ####################################################################
-    # Include microphone coordinate information from Sam's code here...#
-    ####################################################################
+
     x1,y1,z1 = sp.symbols("x1,y1,z1")   # Make X1-3, Y1-3, and Z1-3 symbols
-    phase11, time11 = phase_difference(FixedInput1, FixedInput2)  # Find time difference for each signal
-    phase12, time12 = phase_difference(FixedInput2, FixedInput3)
-    phase13, time13 = phase_difference(FixedInput3, FixedInput4)  #### This needs to match case with the set equations
-    phase14, time14 = phase_difference(FixedInput4, FixedInput1)  ###### Do we need to calculate all this again here? Maybe?
+    phase11, time11 = phase_difference(filteredInput1, filteredInput2)  # Find time difference for each signal
+    phase12, time12 = phase_difference(filteredInput2, filteredInput3)
+    phase13, time13 = phase_difference(filteredInput3, filteredInput4)  #### This needs to match case with the set equations
+    phase14, time14 = phase_difference(filteredInput4, filteredInput1)  ###### Do we need to calculate all this again here? Maybe?
     #phase21, time21 = phase_difference(Mic1, Mic5)
     #phase22, time22 = phase_difference(Mic1, Mic5)
     #phase23, time23 = phase_difference(Mic1, Mic5)
@@ -125,14 +154,28 @@ def TDOA(Data, pointer, Inputs):
     #print(timediffArray)
     minVal = np.min(timediffArray)                         # Find the lowest time difference
     relativeTime = [x - minVal for x in timediffArray] # Subtract the lowest time difference from each value
-    #print(relativeTime)
+    
+    initial_guess = [0, 0, 0]
+    result = minimize(equation, initial_guess, args=(Locations, relativeTime, SpeedOfSound))
+    x1_opt, y1_opt, z1_opt = result.x
+
+    #print("Optimal coordinates (x1, y1, z1):", x1_opt, y1_opt, z1_opt)
+
 
     # Using the location information from Sam's code, calculate the Time Difference Of Arrival in 3 sets, then average the answers
-    set11 = sp.Eq(np.sqrt((x1 - Locations[0][0])^2 + (y1 - Locations[0][1])^2 + (z1 - Locations[0][2])^2) - np.sqrt((x1 - Locations[1][0])^2 + (y1 - Locations[1][1])^2 + (z1 - Locations[1][2])^2) - (SpeedOfSound*(relativeTime[0]-relativeTime[1])))
-    set12 = sp.Eq(np.sqrt((x1 - Locations[1][0])^2 + (y1 - Locations[1][1])^2 + (z1 - Locations[1][2])^2) - np.sqrt((x1 - Locations[2][0])^2 + (y1 - Locations[2][1])^2 + (z1 - Locations[2][2])^2) - (SpeedOfSound*(relativeTime[1]-relativeTime[2])))
-    set13 = sp.Eq(np.sqrt((x1 - Locations[2][0])^2 + (y1 - Locations[2][1])^2 + (z1 - Locations[2][2])^2) - np.sqrt((x1 - Locations[3][0])^2 + (y1 - Locations[3][1])^2 + (z1 - Locations[3][2])^2) - (SpeedOfSound*(relativeTime[2]-relativeTime[3])))
-    set14 = sp.Eq(np.sqrt((x1 - Locations[3][0])^2 + (y1 - Locations[3][1])^2 + (z1 - Locations[3][2])^2) - np.sqrt((x1 - Locations[0][0])^2 + (y1 - Locations[0][1])^2 + (z1 - Locations[0][2])^2) - (SpeedOfSound*(relativeTime[3]-relativeTime[0])))
-
+    
+    #test1 = (((x1 - Locations[0][0])**2) + ((y1 - Locations[0][1])**2) + ((z1 - Locations[0][2])**2))**(1/2)
+    #test2 = (((x1 - Locations[1][0])**2) + ((y1 - Locations[1][1])**2) + ((z1 - Locations[1][2])**2))**(1/2)
+    #test3 = (SpeedOfSound*(relativeTime[0]-relativeTime[1]))
+    #test4 = test1-test2-test3    
+    #print(test4)
+    
+    #print("start1")
+    #set11 = (((x1 - Locations[0][0])**2) + ((y1 - Locations[0][1])**2) + ((z1 - Locations[0][2])**2))**(1/2) - (((x1 - Locations[1][0])**2) + ((y1 - Locations[1][1])**2) + ((z1 - Locations[1][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[0]-relativeTime[1]))
+    #set12 = (((x1 - Locations[1][0])**2) + ((y1 - Locations[1][1])**2) + ((z1 - Locations[1][2])**2))**(1/2) - (((x1 - Locations[2][0])**2) + ((y1 - Locations[2][1])**2) + ((z1 - Locations[2][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[1]-relativeTime[2]))
+    #set13 = (((x1 - Locations[2][0])**2) + ((y1 - Locations[2][1])**2) + ((z1 - Locations[2][2])**2))**(1/2) - (((x1 - Locations[3][0])**2) + ((y1 - Locations[3][1])**2) + ((z1 - Locations[3][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[2]-relativeTime[3]))
+    #set14 = (((x1 - Locations[3][0])**2) + ((y1 - Locations[3][1])**2) + ((z1 - Locations[3][2])**2))**(1/2) - (((x1 - Locations[0][0])**2) + ((y1 - Locations[0][1])**2) + ((z1 - Locations[0][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[3]-relativeTime[0]))
+    #print("start2")
     #set21 = sp.Eq(np.sqrt((x2 - mic6[0])^2 + (y2 - mic6[1])^2 + (z2 - mic6[2])^2) - np.sqrt((x2 - mic8[0])^2 + (y2 - mic8[1])^2 + (z2 - mic8[2])^2) - (SpeedOfSound*timediffArray[4]))
     #set22 = sp.Eq(np.sqrt((x2 - mic8[0])^2 + (y2 - mic8[1])^2 + (z2 - mic8[2])^2) - np.sqrt((x2 - mic3[0])^2 + (y2 - mic3[1])^2 + (z2 - mic3[2])^2) - (SpeedOfSound*timediffArray[5]))
     #set23 = sp.Eq(np.sqrt((x2 - mic3[0])^2 + (y2 - mic3[1])^2 + (z2 - mic3[2])^2) - np.sqrt((x2 - mic1[0])^2 + (y2 - mic1[1])^2 + (z2 - mic1[2])^2) - (SpeedOfSound*timediffArray[6]))
@@ -143,8 +186,9 @@ def TDOA(Data, pointer, Inputs):
     #set33 = sp.Eq(np.sqrt((x3 - mic9[0])^2 + (y3 - mic9[1])^2 + (z3 - mic9[2])^2) - np.sqrt((x3 - mic6[0])^2 + (y3 - mic6[1])^2 + (z3 - mic6[2])^2) - (SpeedOfSound*timediffArray[10]))
     #set34 = sp.Eq(np.sqrt((x3 - mic3[0])^2 + (y3 - mic3[1])^2 + (z3 - mic3[2])^2) - np.sqrt((x3 - mic1[0])^2 + (y3 - mic1[1])^2 + (z3 - mic1[2])^2) - (SpeedOfSound*timediffArray[11]))
 
-    Solution1 = sp.solve([set11,set12,set13,set14],[x1,y1,z1],dict=True)    # Note to future self: check sp.solve to see how it outputs the answers... 
-    print(Solution1)
+    #Solution1 = sp.solve([set11,set12,set13,set14],[x1,y1,z1],dict=True)    # Note to future self: check sp.solve to see how it outputs the answers... 
+    #print("start3")
+    #print(Solution1)
     #Solution2 = sp.solve([set21,set22,set23,set24],[x1,y1,z1],dict=True)    # I think this is correct, unless x1 has multiple answers (eg. x^2 -4 = [-2,2])
     #Solution3 = sp.solve([set31,set32,set33,set34],[x1,y1,z1],dict=True)
 
@@ -156,7 +200,7 @@ def TDOA(Data, pointer, Inputs):
     #Ypos = round(Yposition, 4)
     #Zpos = round(Zposition, 4)
 
-    #return(Xpos,Ypos,Zpos)
+    return(x1_opt, y1_opt, z1_opt)
 
     
 # Function to shutdown script safely
@@ -164,7 +208,6 @@ def signal_handler(sig, frame):
     print("ABORTING")
     sys.exit(0)
 
-# Function for Butterworth lowpass filtering
 def butterworth_coef(cutoff, fs, order=5):
     # Calculate Parameters
     nyq= 0.5*fs
@@ -174,9 +217,13 @@ def butterworth_coef(cutoff, fs, order=5):
     return sos
 
 # Call this function for filtering
-def butter_filter(data, cutoff, fs, order=5):
+def butter_filter(data):
     # Calls function to find the filter coefficents
-    sos = butterworth_coef(cutoff, fs, order=order)
+    sos = [[ 0.32426286,  0.64852571,  0.32426286,  1.,          1.13133225,  0.37447098],
+        [ 1.,          2.,          1.,          1.,          1.41580199,  0.71039477],
+        [ 1.,          0.,         -1.,          1.,         -0.3949446,  -0.47784437],
+        [ 1.,         -2.,          1.,          1.,         -1.86371872,  0.87069052],
+        [ 1.,         -2.,          1.,          1.,         -1.94291867,  0.94997688]]
     # Uses filter coefs to filter the data
     filtered = sosfilt(sos, data)
     return filtered
@@ -221,6 +268,16 @@ def array_place(input):
     
     return positions
 
+def update_plot(frame):
+    Locations = np.zeros((12,3))
+    for x in range(12):
+        Locations[x] = array_place(x+1)
+    ax.scatter(Locations[:,0], Locations[:,1], Locations[:,2], marker = 'o', color = 'blue')
+    x1, y1, z1 = TDOA(data_value,writepointer,[2,5,8,10])
+    print(x1, y1, z1)
+    ax.scatter(x1,y1,z1, marker = 's', color = 'red')
+    
+
 signal.signal(signal.SIGINT, signal_handler)
 
 
@@ -228,16 +285,14 @@ signal.signal(signal.SIGINT, signal_handler)
 #PhaseDiff_Thread2.daemon = True
 #PhaseDiff_Thread2.start()
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s: # Checks to see if the Rpi server is running
-        s.connect((HOST, PORT)) # Tries to connect to the server   
-        while True:
-            tmp = nodeA()
-            with data_lock: # If the thread has control of the variables
-                # Filtering goes here 
-                filtered_data = butter_filter(tmp, high_cutoff, DataRate, order)
-                data_value[:, writepointer] = tmp
-                writepointer = (writepointer + 1) % MAX_DATA_POINTS
-                TDOA(data_value,writepointer,[1,4,7,11])
+# Thread creation and start
+RECV_NODE = threading.Thread(target=nodeA)
+RECV_NODE.daemon = True
+RECV_NODE.start()
+
+
+ani = FuncAnimation(fig, update_plot, interval=100 ,cache_frame_data=False)
+plt.show()
 
 
 
