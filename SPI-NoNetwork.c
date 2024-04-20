@@ -51,6 +51,18 @@ int main(){
     gpioWrite(Select10, 1);
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 1);
+    gpioWrite(Select1, 0);
+    gpioWrite(Select2, 0);
+    gpioWrite(Select3, 0);
+    gpioWrite(Select4, 0);
+    gpioWrite(Select5, 0);
+    gpioWrite(Select6, 0);
+    gpioWrite(Select7, 0);
+    gpioWrite(Select8, 0);
+    gpioWrite(Select9, 0);
+    gpioWrite(Select10, 0);
+    gpioWrite(Select11, 0);
+    gpioWrite(Select12, 0);
     sleep(1);
     clock_gettime(CLOCK_REALTIME, &end);
     double seconds = end.tv_sec - begin.tv_sec;
