@@ -57,7 +57,7 @@ int main(){
     double nanoseconds = end.tv_nsec - begin.tv_nsec;
     double elapsed = seconds + nanoseconds*1e-9;
 
-    printf("Time measured: %.3f seconds.\n", elapsed);
+    printf("Time measured: %f seconds.\n", elapsed);
 
     // Start Loop
     /*
