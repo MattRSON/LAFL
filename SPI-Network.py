@@ -65,7 +65,7 @@ GPIO.output(Select12, GPIO.HIGH) # Enable CS12 pin
 
 
 # Set the SPI speed and mode
-spi.max_speed_hz = 6000000 #12Mhz
+spi.max_speed_hz = 12000000 #12Mhz
 spi.mode = 0
 
 # Setup tcp server
@@ -165,29 +165,29 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             
             #print(ADC)
 
-            archive[:,counter] = ADC
-            counter += 1
-            archiveSize = int(np.size(archive)/12)
-            if counter >= archiveSize:
-                tempArchive = archive
-                archive = np.zeros((12,(archiveSize+DataRate)))
-                archive[:,0:archiveSize] = tempArchive
-                tempArchive = np.zeros((12,(archiveSize+DataRate)))
+            # archive[:,counter] = ADC
+            # counter += 1
+            # archiveSize = int(np.size(archive)/12)
+            # if counter >= archiveSize:
+            #     tempArchive = archive
+            #     archive = np.zeros((12,(archiveSize+DataRate)))
+            #     archive[:,0:archiveSize] = tempArchive
+            #     tempArchive = np.zeros((12,(archiveSize+DataRate)))
 
+            conn.sendall(bytes(ADC.astype(int)))
+            # try:
+            #     # Send all the data over the network as 32bit ints
+            #     conn.sendall(bytes(ADC.astype(int)))
+            # except ConnectionResetError:
+            #     currentDateTime = datetime.now()
+            #     filePath = (currentDateTime.strftime('%y%m%d_%H%M%S')) + '.bin'
 
-            try:
-                # Send all the data over the network as 32bit ints
-                conn.sendall(bytes(ADC.astype(int)))
-            except ConnectionResetError:
-                currentDateTime = datetime.now()
-                filePath = (currentDateTime.strftime('%y%m%d_%H%M%S')) + '.bin'
+            #     print('Saving data to ' + filePath)
+            #     print('File size is ' + str((archive.nbytes)/1000) + 'KB')
+            #     archive.tofile(filePath)
 
-                print('Saving data to ' + filePath)
-                print('File size is ' + str((archive.nbytes)/1000) + 'KB')
-                archive.tofile(filePath)
-
-                print("Shutdown")
-                sys.exit(0)
+            #     print("Shutdown")
+            #     sys.exit(0)
 
             end = timer()
             print(end-start)
