@@ -50,7 +50,7 @@ int main(){
     gpioWrite(Select10, 1);
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 1);
-    delay(10000);
+    sleep(10000);
     clock_gettime(CLOCK_REALTIME, &end);
     //long seconds = end.tv_sec - begin.tv_sec;
     long nanoseconds = end.tv_nsec - begin.tv_nsec;
