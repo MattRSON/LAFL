@@ -93,8 +93,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             
             # try to read 16 bits from the spi bus and send it over network
             GPIO.output(Select1, GPIO.LOW)
-            end = timer()
-            print(end-start)
             Data = spi.readbytes(2)
             ADC[0] = Data[0]*256+Data[1]
             GPIO.output(Select1, GPIO.HIGH)
@@ -179,6 +177,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             
 
             conn.sendall(bytes(ADC.astype(int)))
+
+            end = timer()
+            print(end-start)
             # try:
             #     # Send all the data over the network as 32bit ints
             #     conn.sendall(bytes(ADC.astype(int)))
