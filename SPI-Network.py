@@ -173,7 +173,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #     archive = np.zeros((12,(archiveSize+DataRate)))
             #     archive[:,0:archiveSize] = tempArchive
             #     tempArchive = np.zeros((12,(archiveSize+DataRate)))
-
+            end = timer()
+            print(end-start)
+            
             conn.sendall(bytes(ADC.astype(int)))
             # try:
             #     # Send all the data over the network as 32bit ints
@@ -189,8 +191,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #     print("Shutdown")
             #     sys.exit(0)
 
-            end = timer()
-            print(end-start)
+            
             # Delays based on how long it took to run the code.
             # This keeps the code running at the 50ksps rate
             #if (end-start) < (1/DataRate):
