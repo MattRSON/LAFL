@@ -39,6 +39,7 @@ int main(){
     // Writes all the pins high
     struct timespec begin, end; 
     clock_gettime(CLOCK_REALTIME, &begin);
+    /*
     gpioWrite(Select1, 1);
     gpioWrite(Select2, 1);
     gpioWrite(Select3, 1);
@@ -63,6 +64,7 @@ int main(){
     gpioWrite(Select10, 0);
     gpioWrite(Select11, 0);
     gpioWrite(Select12, 0);
+    */
     sleep(1);
     clock_gettime(CLOCK_REALTIME, &end);
     double seconds = end.tv_sec - begin.tv_sec;
