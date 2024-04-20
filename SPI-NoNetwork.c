@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <pigpio.h>
 #include <time.h>
+#include <unistd.h>
 
 #define Select1 3
 #define Select2 5
@@ -50,7 +51,7 @@ int main(){
     gpioWrite(Select10, 1);
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 1);
-    sleep(10000);
+    sleep(10);
     clock_gettime(CLOCK_REALTIME, &end);
     //long seconds = end.tv_sec - begin.tv_sec;
     long nanoseconds = end.tv_nsec - begin.tv_nsec;
