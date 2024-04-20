@@ -60,10 +60,10 @@ def phase_difference(input1, input2):
 
     F1, D1 = nodeFFT(input1, DataRate)
     F2, D2 = nodeFFT(input2, DataRate)
-    
+   
     # grab only the most prominent frequency 
-    MaxD1 = np.max(abs(D1))
-    IndmaxD1 = np.where(abs(D1) == MaxD1)[0][0]
+    MaxD1 = np.max(D1)
+    IndmaxD1 = np.where(D1 == MaxD1)[0][0]
 
     # Compute phase spectra
     phase_spectrum1 = np.angle(D1[IndmaxD1])
@@ -83,18 +83,22 @@ def phase_difference(input1, input2):
     else:
         time_delay = 0
 
-    if F1[IndmaxD1] > 1300 or F1[IndmaxD1] < 700:
-        plt.plot(F1,np.abs(D1))
-        plt.plot(F2,np.abs(D2))
-        plt.show()
-
     return(phase_diff_spectrum, time_delay)
 
 def nodeFFT(array,sampleRate):
 
     # Takes the real FFT of the data
-    Fdomain = np.fft.fft(array)
-    Frequency = np.fft.fftfreq(np.size(array),1/sampleRate)
+    Fdomain = np.fft.rfft(array)
+    Frequency = np.fft.rfftfreq(np.size(array),1/sampleRate)
+
+    # Finds the strongest frequencies
+    #threshold = .99 * max(abs(Fdomain))
+    #print(threshold)
+    #mask = abs(Fdomain) > threshold
+    #print(mask)
+    #Fpeaks = Frequency[mask]
+    #Dpeaks = Fdomain[mask]
+    #print(Fpeaks)
     return(Frequency,Fdomain)
 
 
@@ -109,7 +113,10 @@ def equation(coords, Locations, relativeTime, SpeedOfSound):
     x1, y1, z1 = coords
     term1 = ((x1 - Locations[0][0])**2 + (y1 - Locations[0][1])**2 + (z1 - Locations[0][2])**2)**0.5
     term2 = ((x1 - Locations[1][0])**2 + (y1 - Locations[1][1])**2 + (z1 - Locations[1][2])**2)**0.5
-
+    #print(term1)
+    #print(term2)
+    #print(SpeedOfSound * (relativeTime[0] - relativeTime[1]))
+    #print(term1 - term2 - SpeedOfSound * (relativeTime[0] - relativeTime[1]))
     return term1 - term2 - SpeedOfSound * (relativeTime[0] - relativeTime[1])
 
 def TDOA(Data, pointer, Inputs):
@@ -131,7 +138,14 @@ def TDOA(Data, pointer, Inputs):
     phase12, time12 = phase_difference(filteredInput2, filteredInput3)
     phase13, time13 = phase_difference(filteredInput3, filteredInput4)  #### This needs to match case with the set equations
     phase14, time14 = phase_difference(filteredInput4, filteredInput1)  ###### Do we need to calculate all this again here? Maybe?
-
+    #phase21, time21 = phase_difference(Mic1, Mic5)
+    #phase22, time22 = phase_difference(Mic1, Mic5)
+    #phase23, time23 = phase_difference(Mic1, Mic5)
+    #phase24, time24 = phase_difference(Mic1, Mic5)
+    #phase31, time31 = phase_difference(Mic1, Mic5)
+    #phase32, time32 = phase_difference(Mic1, Mic5)
+    #phase33, time33 = phase_difference(Mic1, Mic5)
+    #phase34, time34 = phase_difference(Mic1, Mic5)
     Locations = np.zeros((4,3))
     for x in range(4):
         Locations[x] = array_place(Inputs[x])
@@ -144,6 +158,47 @@ def TDOA(Data, pointer, Inputs):
     initial_guess = [0, 0, 0]
     result = minimize(equation, initial_guess, args=(Locations, relativeTime, SpeedOfSound))
     x1_opt, y1_opt, z1_opt = result.x
+
+    #print("Optimal coordinates (x1, y1, z1):", x1_opt, y1_opt, z1_opt)
+
+
+    # Using the location information from Sam's code, calculate the Time Difference Of Arrival in 3 sets, then average the answers
+    
+    #test1 = (((x1 - Locations[0][0])**2) + ((y1 - Locations[0][1])**2) + ((z1 - Locations[0][2])**2))**(1/2)
+    #test2 = (((x1 - Locations[1][0])**2) + ((y1 - Locations[1][1])**2) + ((z1 - Locations[1][2])**2))**(1/2)
+    #test3 = (SpeedOfSound*(relativeTime[0]-relativeTime[1]))
+    #test4 = test1-test2-test3    
+    #print(test4)
+    
+    #print("start1")
+    #set11 = (((x1 - Locations[0][0])**2) + ((y1 - Locations[0][1])**2) + ((z1 - Locations[0][2])**2))**(1/2) - (((x1 - Locations[1][0])**2) + ((y1 - Locations[1][1])**2) + ((z1 - Locations[1][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[0]-relativeTime[1]))
+    #set12 = (((x1 - Locations[1][0])**2) + ((y1 - Locations[1][1])**2) + ((z1 - Locations[1][2])**2))**(1/2) - (((x1 - Locations[2][0])**2) + ((y1 - Locations[2][1])**2) + ((z1 - Locations[2][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[1]-relativeTime[2]))
+    #set13 = (((x1 - Locations[2][0])**2) + ((y1 - Locations[2][1])**2) + ((z1 - Locations[2][2])**2))**(1/2) - (((x1 - Locations[3][0])**2) + ((y1 - Locations[3][1])**2) + ((z1 - Locations[3][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[2]-relativeTime[3]))
+    #set14 = (((x1 - Locations[3][0])**2) + ((y1 - Locations[3][1])**2) + ((z1 - Locations[3][2])**2))**(1/2) - (((x1 - Locations[0][0])**2) + ((y1 - Locations[0][1])**2) + ((z1 - Locations[0][2])**2))**(1/2) - (SpeedOfSound*(relativeTime[3]-relativeTime[0]))
+    #print("start2")
+    #set21 = sp.Eq(np.sqrt((x2 - mic6[0])^2 + (y2 - mic6[1])^2 + (z2 - mic6[2])^2) - np.sqrt((x2 - mic8[0])^2 + (y2 - mic8[1])^2 + (z2 - mic8[2])^2) - (SpeedOfSound*timediffArray[4]))
+    #set22 = sp.Eq(np.sqrt((x2 - mic8[0])^2 + (y2 - mic8[1])^2 + (z2 - mic8[2])^2) - np.sqrt((x2 - mic3[0])^2 + (y2 - mic3[1])^2 + (z2 - mic3[2])^2) - (SpeedOfSound*timediffArray[5]))
+    #set23 = sp.Eq(np.sqrt((x2 - mic3[0])^2 + (y2 - mic3[1])^2 + (z2 - mic3[2])^2) - np.sqrt((x2 - mic1[0])^2 + (y2 - mic1[1])^2 + (z2 - mic1[2])^2) - (SpeedOfSound*timediffArray[6]))
+    #set24 = sp.Eq(np.sqrt((x2 - mic1[0])^2 + (y2 - mic1[1])^2 + (z2 - mic1[2])^2) - np.sqrt((x2 - mic6[0])^2 + (y2 - mic6[1])^2 + (z2 - mic6[2])^2) - (SpeedOfSound*timediffArray[7]))
+
+    #set31 = sp.Eq(np.sqrt((x3 - mic2[0])^2 + (y3 - mic2[1])^2 + (z3 - mic2[2])^2) - np.sqrt((x3 - mic4[0])^2 + (y3 - mic4[1])^2 + (z3 - mic4[2])^2) - (SpeedOfSound*timediffArray[8]))
+    #set32 = sp.Eq(np.sqrt((x3 - mic4[0])^2 + (y3 - mic4[1])^2 + (z3 - mic4[2])^2) - np.sqrt((x3 - mic9[0])^2 + (y3 - mic9[1])^2 + (z3 - mic9[2])^2) - (SpeedOfSound*timediffArray[9]))
+    #set33 = sp.Eq(np.sqrt((x3 - mic9[0])^2 + (y3 - mic9[1])^2 + (z3 - mic9[2])^2) - np.sqrt((x3 - mic6[0])^2 + (y3 - mic6[1])^2 + (z3 - mic6[2])^2) - (SpeedOfSound*timediffArray[10]))
+    #set34 = sp.Eq(np.sqrt((x3 - mic3[0])^2 + (y3 - mic3[1])^2 + (z3 - mic3[2])^2) - np.sqrt((x3 - mic1[0])^2 + (y3 - mic1[1])^2 + (z3 - mic1[2])^2) - (SpeedOfSound*timediffArray[11]))
+
+    #Solution1 = sp.solve([set11,set12,set13,set14],[x1,y1,z1],dict=True)    # Note to future self: check sp.solve to see how it outputs the answers... 
+    #print("start3")
+    #print(Solution1)
+    #Solution2 = sp.solve([set21,set22,set23,set24],[x1,y1,z1],dict=True)    # I think this is correct, unless x1 has multiple answers (eg. x^2 -4 = [-2,2])
+    #Solution3 = sp.solve([set31,set32,set33,set34],[x1,y1,z1],dict=True)
+
+    #Xposition = (Solution1[0]+Solution2[0]+Solution3[0])/3
+    #Yposition = (Solution1[1]+Solution2[1]+Solution3[1])/3
+    #Zposition = (Solution1[2]+Solution2[2]+Solution3[2])/3
+
+    #Xpos = round(Xposition, 4)
+    #Ypos = round(Yposition, 4)
+    #Zpos = round(Zposition, 4)
 
     return(x1_opt, y1_opt, z1_opt)
 

@@ -124,8 +124,8 @@ def signal_handler(sig, frame):
 def butterworth_coef(fs, order=5):
     # Calculate Parameters
     nyq= 0.5*fs
-    low = 100/nyq
-    high = 3000/nyq
+    low = 800/nyq
+    high = 1100/nyq
     # Plug parameters into butter to return coefficents for filter
     sos = butter(order, [low, high], btype='band', analog=False, output='sos')
     print(sos)
@@ -134,11 +134,11 @@ def butterworth_coef(fs, order=5):
 # Call this function for filtering
 def butter_filter(data):
     # Uses filter coefs to filter the data
-    sos = [[ 0.32426286,  0.64852571,  0.32426286,  1.,          1.13133225,  0.37447098],
-        [ 1.,          2.,          1.,          1.,          1.41580199,  0.71039477],
-        [ 1.,          0.,         -1.,          1.,         -0.3949446,  -0.47784437],
-        [ 1.,         -2.,          1.,          1.,         -1.86371872,  0.87069052],
-        [ 1.,         -2.,          1.,          1.,         -1.94291867,  0.94997688]]
+    sos = [[ 8.52734684e-05,  1.70546937e-04,  8.52734684e-05,  1.00000000e+00, -1.14440525e+00,  7.07260746e-01],
+        [ 1.00000000e+00,  2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.02151851e+00,  7.39321383e-01],
+        [ 1.00000000e+00,  0.00000000e+00, -1.00000000e+00,  1.00000000e+00, -1.31481158e+00,  7.78286489e-01],
+        [ 1.00000000e+00, -2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.00445753e+00,  8.88486200e-01],
+        [ 1.00000000e+00, -2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.48224542e+00,  9.15406042e-01]]
     filtered = sosfilt(sos, data)
     
     return filtered
@@ -182,7 +182,7 @@ def array_place(input):
 signal.signal(signal.SIGINT, signal_handler)
 
 
-#butterworth_coef(7400,5)
+butterworth_coef(7400,5)
 realData = np.fromfile('../Recorded Data/240417_140549.bin', dtype=np.float64)
 realData = np.reshape(realData,(12,-1))
 points = np.size(realData)/12
@@ -191,7 +191,10 @@ filteredInput1 = butter_filter(realData[11,:])
 
 F,D = nodeFFT(filteredInput1,7400)
 
-
+MaxD1 = np.max(abs(F))
+IndmaxD1 = np.where(abs(F) == MaxD1)[0][0]
+print(MaxD1)
+print(IndmaxD1)
 #plt.plot(range(int(points)), filteredInput1)
 plt.plot(D,abs(F))
 plt.title('Signal')
