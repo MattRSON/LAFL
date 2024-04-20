@@ -51,7 +51,7 @@ int main(){
     gpioWrite(Select10, 1);
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 1);
-    sleep(10);
+    sleep(1);
     clock_gettime(CLOCK_REALTIME, &end);
     //long seconds = end.tv_sec - begin.tv_sec;
     double nanoseconds = end.tv_nsec - begin.tv_nsec;
