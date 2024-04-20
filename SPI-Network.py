@@ -90,6 +90,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     with conn:
         while True:
             start = timer()
+            end = timer()
+            print(end-start)
             # try to read 16 bits from the spi bus and send it over network
             GPIO.output(Select1, GPIO.LOW)
             Data = spi.readbytes(2)
@@ -173,9 +175,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             #     archive = np.zeros((12,(archiveSize+DataRate)))
             #     archive[:,0:archiveSize] = tempArchive
             #     tempArchive = np.zeros((12,(archiveSize+DataRate)))
-            end = timer()
-            print(end-start)
             
+
             conn.sendall(bytes(ADC.astype(int)))
             # try:
             #     # Send all the data over the network as 32bit ints
