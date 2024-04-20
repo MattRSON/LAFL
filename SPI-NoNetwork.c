@@ -47,9 +47,11 @@ int main(){
     gpioWrite(Select12, 1);
 
     // Start Loop
+    /*
     while(1){
         gpioWrite(Select1, 0);
     }
+    */
 
     // Terminate the library
     gpioTerminate();
