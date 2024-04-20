@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <pigpio.h>
-#include <chrono>
+#include <time.h>
 
 #define Select1 3
 #define Select2 5
@@ -34,7 +34,8 @@ int main(){
     gpioSetMode(Select12, PI_OUTPUT);
 
     // Writes all the pins high
-    auto begin = std::chrono::high_resolution_clock::now();
+    struct timespec begin, end; 
+    clock_gettime(CLOCK_REALTIME, &begin);
     gpioWrite(Select1, 1);
     gpioWrite(Select2, 1);
     gpioWrite(Select3, 1);
@@ -47,10 +48,12 @@ int main(){
     gpioWrite(Select10, 1);
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 1);
-    auto end = std::chrono::high_resolution_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin);
+    clock_gettime(CLOCK_REALTIME, &end);
+    long seconds = end.tv_sec - begin.tv_sec;
+    long nanoseconds = end.tv_nsec - begin.tv_nsec;
+    double elapsed = seconds + nanoseconds*1e-9;
 
-    printf("Time measured: %.3f seconds.\n", elapsed.count());
+    printf("Time measured: %.3f seconds.\n", elapsed);
 
     // Start Loop
     /*
