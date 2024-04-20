@@ -15,6 +15,20 @@
 #define Select11 18
 #define Select12 22
 
+void delay(int number_of_seconds)
+{
+    // Converting time into milli_seconds
+    int milli_seconds = 1000 * number_of_seconds;
+ 
+    // Storing start time
+    clock_t start_time = clock();
+ 
+    // looping till required time is not achieved
+    while (clock() < start_time + milli_seconds)
+        ;
+}
+
+
 int main(){
     // Init gpio
     if (gpioInitialise()<0) return -1;
@@ -48,6 +62,7 @@ int main(){
     gpioWrite(Select10, 1);
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 1);
+    delay(1);
     clock_gettime(CLOCK_REALTIME, &end);
     //long seconds = end.tv_sec - begin.tv_sec;
     long nanoseconds = end.tv_nsec - begin.tv_nsec;
