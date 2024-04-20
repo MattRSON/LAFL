@@ -1,18 +1,18 @@
 #include <stdio.h>
 #include <pigpio.h>
 
-#define Select1 = 3
-#define Select2 = 5
-#define Select3 = 7
-#define Select4 = 11
-#define Select5 = 13
-#define Select6 = 15
-#define Select7 = 8
-#define Select8 = 10
-#define Select9 = 12
-#define Select10 = 16
-#define Select11 = 18
-#define Select12 = 22
+#define Select1 3
+#define Select2 5
+#define Select3 7
+#define Select4 11
+#define Select5 13
+#define Select6 15
+#define Select7 8
+#define Select8 10
+#define Select9 12
+#define Select10 16
+#define Select11 18
+#define Select12 22
 
 int main(){
     // Init gpio
