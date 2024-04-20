@@ -190,7 +190,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 sys.exit(0)
 
             end = timer()
-            
+            print(end-start)
             # Delays based on how long it took to run the code.
             # This keeps the code running at the 50ksps rate
             #if (end-start) < (1/DataRate):
