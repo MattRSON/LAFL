@@ -18,10 +18,10 @@ import sympy as sp # Sympy for systems of equations. Used in TDOA function.
 from scipy.optimize import minimize
 
 
-DataRate = 7400 #Hz
+DataRate = 666 #Hz
 
-#fig, axs = plt.subplots(2, 2)
-fig, ax = plt.subplots() # Starts the plot
+fig, axs = plt.subplots(2, 2)
+#fig, ax = plt.subplots() # Starts the plot
 
 def phase_difference(input1, input2):
     
@@ -60,9 +60,9 @@ def nodeFFT(array,sampleRate):
 
     # Takes the real FFT of the data
     Fdomain = np.fft.rfft(array)
-    #Frequency = np.fft.rfftfreq(np.size(array),1/sampleRate)
-    MaxD1 = np.max(abs(Fdomain))
-    return(MaxD1)
+    Frequency = np.fft.rfftfreq(np.size(array),1/sampleRate)
+    #print(F1[IndmaxD1])
+    return(Frequency ,Fdomain)
 
 # Drafting this Arrival time stuff
 # For loop for finding sample when it hits threshold
@@ -258,33 +258,33 @@ def update_plot(frame):
     F,D = nodeFFT(np.concatenate((input1[counter+0:counter+25], np.zeros(50))),7400)
     ax.plot(F[1:],abs(D[1:]))
 
-filelog = '../Recorded Data/240417_142521.bin'
+filelog = '../Recorded Data/240417_144034.bin'
 print(filelog)
 realData = np.fromfile(filelog, dtype=np.float64)
 realData = np.reshape(realData,(12,-1))
 points = np.size(realData)/12
 
-x, fakeData1, fakeData2, fakeData3, fakeData4 = IdealData()
-fakeData = [fakeData1,fakeData2,fakeData3,fakeData4]
+# x, fakeData1, fakeData2, fakeData3, fakeData4 = IdealData()
+# fakeData = [fakeData1,fakeData2,fakeData3,fakeData4]
 
-TDOA(realData, [2, 5, 8, 10])
+# TDOA(realData, [2, 5, 8, 10])
 
 #2,5,8,10
 #input1 = butter_filter(realData[1])
-#input1 = realData[1]
-#input2 = butter_filter(realData[4])
-#input3 = butter_filter(realData[7])
-#input4 = butter_filter(realData[9])
+input1 = realData[1]
+input2 = butter_filter(realData[4])
+input3 = butter_filter(realData[7])
+input4 = butter_filter(realData[9])
 
 # input1 = butter_filter(fakeData1)
 # input2 = butter_filter(fakeData2)
 # input3 = butter_filter(fakeData3)
 # input4 = butter_filter(fakeData4)
 #print(np.size(input1))
-# F1,D1 = nodeFFT(input1,DataRate)
-# F2,D2 = nodeFFT(input2,DataRate)
-# F3,D3 = nodeFFT(input3,DataRate)
-# F4,D4 = nodeFFT(input4,DataRate)
+F1,D1 = nodeFFT(input1,DataRate)
+F2,D2 = nodeFFT(input2,DataRate)
+F3,D3 = nodeFFT(input3,DataRate)
+F4,D4 = nodeFFT(input4,DataRate)
 
 #phase1,time1 = phase_difference(input1,input2)
 #phase2,time2 = phase_difference(input2,input3)
@@ -300,14 +300,14 @@ TDOA(realData, [2, 5, 8, 10])
 #x1, y1, z1 = TDOA([input1, input2, input3, input4],[1,2,3,4])
 #print(x1, y1, z1)
 
-# axs[0, 0].plot(F1, abs(D1))
-# axs[0, 0].set_title('F1')
-# axs[0, 1].plot(F2, abs(D2), 'tab:orange')
-# axs[0, 1].set_title('F2')
-# axs[1, 0].plot(F3, abs(D3), 'tab:green')
-# axs[1, 0].set_title('F3')
-# axs[1, 1].plot(F4, abs(D4), 'tab:red')
-# axs[1, 1].set_title('F4')
+axs[0, 0].plot(F1[100:], abs(D1[100:]))
+axs[0, 0].set_title('F1')
+axs[0, 1].plot(input1[0:10000], 'tab:orange')
+axs[0, 1].set_title('F2')
+axs[1, 0].plot(F3, abs(D3), 'tab:green')
+axs[1, 0].set_title('F3')
+axs[1, 1].plot(F4, abs(D4), 'tab:red')
+axs[1, 1].set_title('F4')
 # axs[0, 0].plot(input1[0:2500])
 # axs[0, 0].set_title('Signal1')
 # axs[0, 1].plot(input2, 'tab:orange')
@@ -326,4 +326,4 @@ TDOA(realData, [2, 5, 8, 10])
 #     ax.label_outer()  
 #counter = 0   
 #ani = FuncAnimation(fig, update_plot, interval=1 ,cache_frame_data=False)
-#plt.show()        
+plt.show()        
