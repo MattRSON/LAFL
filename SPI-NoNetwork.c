@@ -5,17 +5,17 @@
 #include <unistd.h>
 
 #define Select1 2
-// #define Select2 3
-// #define Select3 4
-// #define Select4 17
-// #define Select5 27
-// #define Select6 22
-// #define Select7 14
-// #define Select8 15
-// #define Select9 18
-// #define Select10 23
-// #define Select11 24
-// #define Select12 25
+#define Select2 3
+#define Select3 4
+#define Select4 17
+#define Select5 27
+#define Select6 22
+#define Select7 14
+#define Select8 15
+#define Select9 18
+#define Select10 23
+#define Select11 24
+#define Select12 25
 
 
 int main(){
@@ -23,107 +23,121 @@ int main(){
     if (gpioInitialise()<0) return -1;
 
     unsigned char Data[2];
-    //uint16_t BulkData[12];
+    uint16_t BulkData[12];
     int handle = spiOpen(1, 1000000, 0);
     // Set pins as outputs
     gpioSetMode(Select1, PI_OUTPUT);
-    // gpioSetMode(Select2, PI_OUTPUT);
-    // gpioSetMode(Select3, PI_OUTPUT);
-    // gpioSetMode(Select4, PI_OUTPUT);
-    // gpioSetMode(Select5, PI_OUTPUT);
-    // gpioSetMode(Select6, PI_OUTPUT);
-    // gpioSetMode(Select7, PI_OUTPUT);
-    // gpioSetMode(Select8, PI_OUTPUT);
-    // gpioSetMode(Select9, PI_OUTPUT);
-    // gpioSetMode(Select10, PI_OUTPUT);
-    // gpioSetMode(Select11, PI_OUTPUT);
-    // gpioSetMode(Select12, PI_OUTPUT);
+    gpioSetMode(Select2, PI_OUTPUT);
+    gpioSetMode(Select3, PI_OUTPUT);
+    gpioSetMode(Select4, PI_OUTPUT);
+    gpioSetMode(Select5, PI_OUTPUT);
+    gpioSetMode(Select6, PI_OUTPUT);
+    gpioSetMode(Select7, PI_OUTPUT);
+    gpioSetMode(Select8, PI_OUTPUT);
+    gpioSetMode(Select9, PI_OUTPUT);
+    gpioSetMode(Select10, PI_OUTPUT);
+    gpioSetMode(Select11, PI_OUTPUT);
+    gpioSetMode(Select12, PI_OUTPUT);
 
     // Writes all the pins high
     //struct timespec begin, end; 
     //clock_gettime(CLOCK_REALTIME, &begin);
     
     gpioWrite(Select1, 1);
-    // gpioWrite(Select2, 1);
-    // gpioWrite(Select3, 1);
-    // gpioWrite(Select4, 1);
-    // gpioWrite(Select5, 1);
-    // gpioWrite(Select6, 1);
-    // gpioWrite(Select7, 1);
-    // gpioWrite(Select8, 1);
-    // gpioWrite(Select9, 1);
-    // gpioWrite(Select10, 1);
-    // gpioWrite(Select11, 1);
-    // gpioWrite(Select12, 1);
+    gpioWrite(Select2, 1);
+    gpioWrite(Select3, 1);
+    gpioWrite(Select4, 1);
+    gpioWrite(Select5, 1);
+    gpioWrite(Select6, 1);
+    gpioWrite(Select7, 1);
+    gpioWrite(Select8, 1);
+    gpioWrite(Select9, 1);
+    gpioWrite(Select10, 1);
+    gpioWrite(Select11, 1);
+    gpioWrite(Select12, 1);
 
     while(1){
+        //printf("0x%02X", Data[0]); // This is for debugging 
         gpioWrite(Select1, 0);
         sleep(1e-6);
         spiRead(handle, Data, 2);
         gpioWrite(Select1, 1);
-        //sleep(1);
-        uint16_t test = (Data[0]*256)+Data[1];
-        //printf("0x%02X", Data[0]);
-        printf("%d", test);
-        //BulkData[0] = *Data;
-        //printf("%d ", BulkData[0]);
+        BulkData[0] = (Data[0]*256)+Data[1];
+        
+        gpioWrite(Select2, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select2, 1);
+        BulkData[1] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select3, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select3, 1);
+        BulkData[2] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select4, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select4, 1);
+        BulkData[3] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select5, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select5, 1);
+        BulkData[4] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select6, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select6, 1);
+        BulkData[5] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select7, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select7, 1);
+        BulkData[6] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select8, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select8, 1);
+        BulkData[7] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select9, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select9, 1);
+        BulkData[8] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select10, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select10, 1);
+        BulkData[9] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select11, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select11, 1);
+        BulkData[10] = (Data[0]*256)+Data[1];
+
+        gpioWrite(Select12, 0);
+        sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select12, 1);
+        BulkData[11] = (Data[0]*256)+Data[1];
+
+
+        for (int i = 0; i < 12; i++) {
+            printf("%d ", BulkData[i]);
+        }
+        printf("\n");
     }
     /*
-    gpioWrite(Select2, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select2, 1);
-    BulkData[1] = *Data;
-    gpioWrite(Select3, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select3, 1);
-    BulkData[2] = *Data;
-    gpioWrite(Select4, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select4, 1);
-    BulkData[3] = *Data;
-    gpioWrite(Select5, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select5, 1);
-    BulkData[4] = *Data;
-    gpioWrite(Select6, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select6, 1);
-    BulkData[5] = *Data;
-    gpioWrite(Select7, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select7, 1);
-    BulkData[6] = *Data;
-    gpioWrite(Select8, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select8, 1);
-    BulkData[7] = *Data;
-    gpioWrite(Select9, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select9, 1);
-    BulkData[8] = *Data;
-    gpioWrite(Select10, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select10, 1);
-    BulkData[9] = *Data;
-    gpioWrite(Select11, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select11, 1);
-    BulkData[10] = *Data;
-    gpioWrite(Select12, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
-    gpioWrite(Select12, 1);
-    BulkData[11] = *Data;
+    
     */
     
     // for (int i = 0; i < 12; i++) {
