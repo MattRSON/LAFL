@@ -5,17 +5,17 @@
 #include <unistd.h>
 
 #define Select1 3
-#define Select2 5
-#define Select3 7
-#define Select4 11
-#define Select5 13
-#define Select6 15
-#define Select7 8
-#define Select8 10
-#define Select9 12
-#define Select10 16
-#define Select11 18
-#define Select12 22
+// #define Select2 5
+// #define Select3 7
+// #define Select4 11
+// #define Select5 13
+// #define Select6 15
+// #define Select7 8
+// #define Select8 10
+// #define Select9 12
+// #define Select10 16
+// #define Select11 18
+// #define Select12 22
 
 
 int main(){
@@ -24,24 +24,24 @@ int main(){
     int handle = 0;
     uint16_t Data[1];
     uint16_t BulkData[12];
-    handle = spiOpen(1, 1000000, SPI_NO_CS);
+    handle = spiOpen(1, 1000000, 0);
     // Set pins as outputs
     gpioSetMode(Select1, PI_OUTPUT);
-    gpioSetMode(Select2, PI_OUTPUT);
-    gpioSetMode(Select3, PI_OUTPUT);
-    gpioSetMode(Select4, PI_OUTPUT);
-    gpioSetMode(Select5, PI_OUTPUT);
-    gpioSetMode(Select6, PI_OUTPUT);
-    gpioSetMode(Select7, PI_OUTPUT);
-    gpioSetMode(Select8, PI_OUTPUT);
-    gpioSetMode(Select9, PI_OUTPUT);
-    gpioSetMode(Select10, PI_OUTPUT);
-    gpioSetMode(Select11, PI_OUTPUT);
-    gpioSetMode(Select12, PI_OUTPUT);
+    // gpioSetMode(Select2, PI_OUTPUT);
+    // gpioSetMode(Select3, PI_OUTPUT);
+    // gpioSetMode(Select4, PI_OUTPUT);
+    // gpioSetMode(Select5, PI_OUTPUT);
+    // gpioSetMode(Select6, PI_OUTPUT);
+    // gpioSetMode(Select7, PI_OUTPUT);
+    // gpioSetMode(Select8, PI_OUTPUT);
+    // gpioSetMode(Select9, PI_OUTPUT);
+    // gpioSetMode(Select10, PI_OUTPUT);
+    // gpioSetMode(Select11, PI_OUTPUT);
+    // gpioSetMode(Select12, PI_OUTPUT);
 
     // Writes all the pins high
     struct timespec begin, end; 
-    clock_gettime(CLOCK_REALTIME, &begin);
+    //clock_gettime(CLOCK_REALTIME, &begin);
     
     gpioWrite(Select1, 1);
     // gpioWrite(Select2, 1);
@@ -56,12 +56,13 @@ int main(){
     // gpioWrite(Select11, 1);
     // gpioWrite(Select12, 1);
 
-
-    gpioWrite(Select1, 0);
-    sleep(1e-6);
-    spiRead(handle, (char*)Data, 2);
-    gpioWrite(Select1, 1);
-    BulkData[0] = *Data;
+    while(1){
+        gpioWrite(Select1, 0);
+        sleep(1e-6);
+        spiRead(handle, (char*)Data, 2);
+        gpioWrite(Select1, 1);
+        BulkData[0] = *Data;
+    }
     /*
     gpioWrite(Select2, 0);
     sleep(1e-6);
@@ -120,16 +121,16 @@ int main(){
     BulkData[11] = *Data;
     */
     
-    for (int i = 0; i < 12; i++) {
-        printf("%d ", BulkData[i]);
-    }
+    // for (int i = 0; i < 12; i++) {
+    //     printf("%d ", BulkData[i]);
+    // }
     //sleep(1);
-    clock_gettime(CLOCK_REALTIME, &end);
-    double seconds = end.tv_sec - begin.tv_sec;
-    double nanoseconds = end.tv_nsec - begin.tv_nsec;
-    double elapsed = seconds + nanoseconds*1e-9;
+    //clock_gettime(CLOCK_REALTIME, &end);
+    // double seconds = end.tv_sec - begin.tv_sec;
+    // double nanoseconds = end.tv_nsec - begin.tv_nsec;
+    // double elapsed = seconds + nanoseconds*1e-9;
 
-    printf("Time measured: %f seconds.\n", elapsed);
+    //printf("Time measured: %f seconds.\n", elapsed);
 
     // Start Loop
     /*
