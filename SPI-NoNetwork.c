@@ -22,7 +22,7 @@ int main(){
     // Init gpio
     if (gpioInitialise()<0) return -1;
     int handle = 0;
-    uint16_t Data;
+    uint16_t Data[12];
     handle = spiOpen(0, 12000000,0);
     // Set pins as outputs
     gpioSetMode(Select1, PI_OUTPUT);
@@ -57,7 +57,7 @@ int main(){
 
 
     gpioWrite(Select1, 0);
-    spiRead(handle, (char*)Data,2);
+    spiRead(handle, (char*)Data[0],2);
     gpioWrite(Select1, 1);
     gpioWrite(Select2, 0);
     spiRead(handle, (char*)Data,2);
