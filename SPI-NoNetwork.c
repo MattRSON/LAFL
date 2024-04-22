@@ -57,93 +57,93 @@ int main(){
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 1);
 
-    //while(1){
+    while(1){
         //printf("0x%02X", Data[0]); // This is for debugging 
-    clock_gettime(CLOCK_REALTIME, &begin);
-    gpioWrite(Select1, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data, 2);
-    gpioWrite(Select1, 1);
-    BulkData[0] = (Data[0]*256)+Data[1];
-    
-    gpioWrite(Select2, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select2, 1);
-    BulkData[1] = (Data[0]*256)+Data[1];
+    //clock_gettime(CLOCK_REALTIME, &begin);
+        gpioWrite(Select1, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data, 2);
+        gpioWrite(Select1, 1);
+        BulkData[0] = (Data[0]*256)+Data[1];
+        
+        gpioWrite(Select2, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select2, 1);
+        BulkData[1] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select3, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select3, 1);
-    BulkData[2] = (Data[0]*256)+Data[1];
+        gpioWrite(Select3, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select3, 1);
+        BulkData[2] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select4, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select4, 1);
-    BulkData[3] = (Data[0]*256)+Data[1];
+        gpioWrite(Select4, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select4, 1);
+        BulkData[3] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select5, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select5, 1);
-    BulkData[4] = (Data[0]*256)+Data[1];
+        gpioWrite(Select5, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select5, 1);
+        BulkData[4] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select6, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select6, 1);
-    BulkData[5] = (Data[0]*256)+Data[1];
+        gpioWrite(Select6, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select6, 1);
+        BulkData[5] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select7, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select7, 1);
-    BulkData[6] = (Data[0]*256)+Data[1];
+        gpioWrite(Select7, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select7, 1);
+        BulkData[6] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select8, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select8, 1);
-    BulkData[7] = (Data[0]*256)+Data[1];
+        gpioWrite(Select8, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select8, 1);
+        BulkData[7] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select9, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select9, 1);
-    BulkData[8] = (Data[0]*256)+Data[1];
+        gpioWrite(Select9, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select9, 1);
+        BulkData[8] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select10, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select10, 1);
-    BulkData[9] = (Data[0]*256)+Data[1];
+        gpioWrite(Select10, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select10, 1);
+        BulkData[9] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select11, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select11, 1);
-    BulkData[10] = (Data[0]*256)+Data[1];
+        gpioWrite(Select11, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select11, 1);
+        BulkData[10] = (Data[0]*256)+Data[1];
 
-    gpioWrite(Select12, 0);
-    //sleep(1e-6);
-    spiRead(handle, Data,2);
-    gpioWrite(Select12, 1);
-    BulkData[11] = (Data[0]*256)+Data[1];
+        gpioWrite(Select12, 0);
+        //sleep(1e-6);
+        spiRead(handle, Data,2);
+        gpioWrite(Select12, 1);
+        BulkData[11] = (Data[0]*256)+Data[1];
 
-    clock_gettime(CLOCK_REALTIME, &end);
-    double seconds = end.tv_sec - begin.tv_sec;
-    double nanoseconds = end.tv_nsec - begin.tv_nsec;
-    double elapsed = seconds + nanoseconds*1e-9;
+        // clock_gettime(CLOCK_REALTIME, &end);
+        // double seconds = end.tv_sec - begin.tv_sec;
+        // double nanoseconds = end.tv_nsec - begin.tv_nsec;
+        // double elapsed = seconds + nanoseconds*1e-9;
 
-    printf("Time measured: %f seconds.\n", elapsed);
-    for (int i = 0; i < 12; i++) {
-        printf("%d ", BulkData[i]);
+        // printf("Time measured: %f seconds.\n", elapsed);
+        for (int i = 0; i < 12; i++) {
+            printf("%d ", BulkData[i]);
+        }
+        printf("\n");
+        sleep(1);
     }
-    printf("\n");
-    sleep(1);
-    //}
     /*
     
     */
