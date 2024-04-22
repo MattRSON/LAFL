@@ -58,10 +58,10 @@ int main(){
 
     while(1){
         gpioWrite(Select1, 0);
-        sleep(1e-6);
+        sleep(1);
         //spiRead(handle, Data, 2);
         gpioWrite(Select1, 1);
-        //sleep(1);
+        sleep(1);
         //printf("%s", Data[1]);
         //BulkData[0] = *Data;
         //printf("%d ", BulkData[0]);
