@@ -165,8 +165,8 @@ int main(){
         double nanoseconds = end.tv_nsec - begin.tv_nsec;
         double elapsed = seconds + nanoseconds*1e-9;
 
-        if (elapsed < .000333){
-            sleep(elapsed-.000333);
+        if (elapsed < .0001){
+            sleep(.0001-elapsed);
         } else {
             printf("Shits Fucked %f\n",elapsed);
         }
