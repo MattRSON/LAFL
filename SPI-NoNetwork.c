@@ -46,7 +46,7 @@ int main(){
 
     unsigned char Data[2];
     uint16_t BulkData[12];
-    int handle = spiOpen(1, 9000000, 0);
+    int handle = spiOpen(1, 10000000, 0);
     // Set pins as outputs
     gpioSetMode(Select1, PI_OUTPUT);
     gpioSetMode(Select2, PI_OUTPUT);
