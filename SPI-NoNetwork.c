@@ -25,10 +25,24 @@ int main(){
     // Init gpio
     if (gpioInitialise()<0) return -1;
 
-    time_t t;
-    time(&t);
-    char* systemTime = ctime(&t);
-    strcat(systemTime,".csv");
+    time_t rawtime;
+    struct tm *timeinfo;
+    char datetime_str[20]; // This will hold the formatted datetime string
+
+    // Get current system time
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    // Format the datetime string as per the specified format
+    sprintf(datetime_str, "%04d%02d%02d_%02d%02d%02d",
+            1900 + timeinfo->tm_year, // Year (1900 + current year)
+            1 + timeinfo->tm_mon,     // Month (0-based index, so add 1)
+            timeinfo->tm_mday,        // Day of the month
+            timeinfo->tm_hour,        // Hour
+            timeinfo->tm_min,         // Minute
+            timeinfo->tm_sec);        // Second
+
+    strcat(datetime_str,".csv");
 
     unsigned char Data[2];
     uint16_t BulkData[12];
