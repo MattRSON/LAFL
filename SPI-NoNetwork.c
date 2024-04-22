@@ -4,6 +4,7 @@
 #include <pigpio.h>
 #include <time.h>
 #include <unistd.h>
+#include <string.h>
 
 #define Select1 2
 #define Select2 3
