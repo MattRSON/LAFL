@@ -61,8 +61,8 @@ int main(){
     sleep(1e-6);
     spiRead(handle, (char*)Data, 2);
     gpioWrite(Select1, 1);
-    /*
     BulkData[0] = *Data;
+    /*
     gpioWrite(Select2, 0);
     sleep(1e-6);
     spiRead(handle, (char*)Data,2);
