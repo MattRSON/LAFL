@@ -157,8 +157,9 @@ int main(){
 
         
         
-        fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
-        
+        //fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
+        fwrite(BulkData,16,12,fp);
+
         clock_gettime(CLOCK_REALTIME, &end);
         double seconds = end.tv_sec - begin.tv_sec;
         double nanoseconds = end.tv_nsec - begin.tv_nsec;
