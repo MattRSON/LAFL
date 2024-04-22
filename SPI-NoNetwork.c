@@ -59,7 +59,7 @@ int main(){
     while(1){
         gpioWrite(Select1, 0);
         sleep(1e-6);
-        spiRead(handle, Data, 2);
+        //spiRead(handle, Data, 2);
         gpioWrite(Select1, 1);
         //sleep(1);
         printf("%s", Data[1]);
