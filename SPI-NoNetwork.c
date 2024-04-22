@@ -4,18 +4,18 @@
 #include <time.h>
 #include <unistd.h>
 
-#define Select1 3
-#define Select2 5
-#define Select3 7
-#define Select4 11
-#define Select5 13
-#define Select6 15
-#define Select7 8
-#define Select8 10
-#define Select9 12
-#define Select10 16
-#define Select11 18
-#define Select12 22
+#define Select1 2
+#define Select2 3
+#define Select3 4
+#define Select4 17
+#define Select5 27
+#define Select6 22
+#define Select7 14
+#define Select8 15
+#define Select9 18
+#define Select10 23
+#define Select11 24
+#define Select12 25
 
 
 int main(){
@@ -58,11 +58,11 @@ int main(){
 
     while(1){
         gpioWrite(Select1, 0);
-        sleep(1);
-        //spiRead(handle, Data, 2);
+        sleep(1e-6);
+        spiRead(handle, Data, 2);
         gpioWrite(Select1, 1);
-        sleep(1);
-        //printf("%s", Data[1]);
+        //sleep(1);
+        printf("%s", Data[1]);
         //BulkData[0] = *Data;
         //printf("%d ", BulkData[0]);
     }
