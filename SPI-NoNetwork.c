@@ -24,6 +24,11 @@ int main(){
     // Init gpio
     if (gpioInitialise()<0) return -1;
 
+    time_t t;
+    time(&t);
+    char* systemTime = ctime(&t);
+    strcat(systemTime,".csv");
+
     unsigned char Data[2];
     uint16_t BulkData[12];
     int handle = spiOpen(1, 6000000, 0);
@@ -133,8 +138,8 @@ int main(){
         gpioWrite(Select12, 1);
         BulkData[11] = (Data[0]*256)+Data[1];
 
-
-        fp = fopen("test.csv", "a");
+        
+        fp = fopen(systemTime, "a");
         fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
         fclose(fp);
         // clock_gettime(CLOCK_REALTIME, &end);
