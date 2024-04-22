@@ -135,6 +135,7 @@ int main(){
             printf("%d ", BulkData[i]);
         }
         printf("\n");
+        sleep(1);
     }
     /*
     
