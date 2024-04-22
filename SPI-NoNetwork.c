@@ -165,7 +165,7 @@ int main(){
         if (elapsed < .000166){
             sleep(elapsed-.000166);
         } else {
-            printf("%s\n", "Shits Fucked")
+            printf("%s\n", "Shits Fucked");
         }
         // printf("Time measured: %f seconds.\n", elapsed);
         // for (int i = 0; i < 12; i++) {
