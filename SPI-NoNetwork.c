@@ -42,7 +42,7 @@ int main(){
             timeinfo->tm_min,         // Minute
             timeinfo->tm_sec);        // Second
 
-    strcat(datetime_str,".csv");
+    strcat(datetime_str,".bin");
     fp = fopen(datetime_str, "a");
 
 
