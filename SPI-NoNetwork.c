@@ -61,7 +61,7 @@ int main(){
         sleep(1e-6);
         spiRead(handle, Data, 2);
         gpioWrite(Select1, 1);
-        printf("%s", Data[0]);
+        printf("%s", Data[1]);
         //BulkData[0] = *Data;
         //printf("%d ", BulkData[0]);
     }
