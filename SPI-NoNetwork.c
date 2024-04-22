@@ -21,10 +21,10 @@
 int main(){
     // Init gpio
     if (gpioInitialise()<0) return -1;
-    int handle = 0;
+
     unsigned char Data[2];
-    uint16_t BulkData[12];
-    handle = spiOpen(1, 10000000, 0);
+    //uint16_t BulkData[12];
+    int handle = spiOpen(1, 1000000, 0);
     // Set pins as outputs
     gpioSetMode(Select1, PI_OUTPUT);
     // gpioSetMode(Select2, PI_OUTPUT);
@@ -40,7 +40,7 @@ int main(){
     // gpioSetMode(Select12, PI_OUTPUT);
 
     // Writes all the pins high
-    struct timespec begin, end; 
+    //struct timespec begin, end; 
     //clock_gettime(CLOCK_REALTIME, &begin);
     
     gpioWrite(Select1, 1);
@@ -58,11 +58,11 @@ int main(){
 
     while(1){
         gpioWrite(Select1, 0);
-        sleep(1);
-        //spiRead(handle, Data, 2);
+        sleep(1e-6);
+        spiRead(handle, Data, 2);
         gpioWrite(Select1, 1);
-        sleep(1);
-        //printf("%s", Data[1]);
+        //sleep(1);
+        printf("%s", Data[1]);
         //BulkData[0] = *Data;
         //printf("%d ", BulkData[0]);
     }
