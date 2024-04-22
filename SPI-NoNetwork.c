@@ -170,7 +170,7 @@ int main(){
         } else {
             printf("Shits Fucked %f\n",elapsed);
         }
-        printf("Time measured: %f seconds.\n", elapsed);
+        //printf("Time measured: %f seconds.\n", elapsed);
         // for (int i = 0; i < 12; i++) {
         //     printf("%d ", BulkData[i]);
         // }
