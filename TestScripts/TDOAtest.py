@@ -16,6 +16,7 @@ import sympy as sp # Sympy for systems of equations. Used in TDOA function.
 #from sympy.solvers import solve
 #from sympy.abc import x,y,z
 from scipy.optimize import minimize
+import csv
 
 
 DataRate = 666 #Hz
@@ -258,11 +259,17 @@ def update_plot(frame):
     F,D = nodeFFT(np.concatenate((input1[counter+0:counter+25], np.zeros(50))),7400)
     ax.plot(F[1:],abs(D[1:]))
 
-filelog = '../Recorded Data/240417_144034.bin'
+filelog = r'../Recorded Data 2/20240422_121344.csv'
 print(filelog)
-realData = np.fromfile(filelog, dtype=np.float64)
-realData = np.reshape(realData,(12,-1))
-points = np.size(realData)/12
+#realData = np.fromfile(filelog, dtype=np.float64)
+# with open(filelog, newline='') as csvfile:
+#     reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+# #realData = np.reshape(realData,(12,-1))
+# #points = np.size(realData)/12
+#     for row in reader:
+#         realData.appen
+realData = np.loadtxt(filelog, delimiter=',')
+#print(realData)
 
 # x, fakeData1, fakeData2, fakeData3, fakeData4 = IdealData()
 # fakeData = [fakeData1,fakeData2,fakeData3,fakeData4]
