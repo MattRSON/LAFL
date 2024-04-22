@@ -157,17 +157,20 @@ int main(){
         fp = fopen(datetime_str, "a");
         fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
         fclose(fp);
-        // clock_gettime(CLOCK_REALTIME, &end);
-        // double seconds = end.tv_sec - begin.tv_sec;
-        // double nanoseconds = end.tv_nsec - begin.tv_nsec;
-        // double elapsed = seconds + nanoseconds*1e-9;
+        clock_gettime(CLOCK_REALTIME, &end);
+        double seconds = end.tv_sec - begin.tv_sec;
+        double nanoseconds = end.tv_nsec - begin.tv_nsec;
+        double elapsed = seconds + nanoseconds*1e-9;
 
+        if (elapsed < .000166){
+            sleep(elapsed-.000166);
+        }
         // printf("Time measured: %f seconds.\n", elapsed);
         // for (int i = 0; i < 12; i++) {
         //     printf("%d ", BulkData[i]);
         // }
         // printf("\n");
-        sleep(1);
+        //sleep(1);
     }
    
 
