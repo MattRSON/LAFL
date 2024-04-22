@@ -42,7 +42,7 @@ int main(){
             timeinfo->tm_min,         // Minute
             timeinfo->tm_sec);        // Second
 
-    strcat(datetime_str,".bin");
+    strcat(datetime_str,".csv");
     fp = fopen(datetime_str, "a");
 
 
@@ -157,8 +157,8 @@ int main(){
 
         
         
-        //fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
-        fwrite(BulkData,16,12,fp);
+        fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
+        //fwrite(BulkData,16,12,fp);
 
         clock_gettime(CLOCK_REALTIME, &end);
         double seconds = end.tv_sec - begin.tv_sec;
@@ -170,7 +170,7 @@ int main(){
         } else {
             printf("Shits Fucked %f\n",elapsed);
         }
-        // printf("Time measured: %f seconds.\n", elapsed);
+        printf("Time measured: %f seconds.\n", elapsed);
         // for (int i = 0; i < 12; i++) {
         //     printf("%d ", BulkData[i]);
         // }
