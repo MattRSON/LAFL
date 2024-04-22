@@ -57,40 +57,40 @@ int main(){
 
 
     gpioWrite(Select1, 0);
-    spiRead(handle, ADCS[0],2)
+    spiRead(handle, ADCS[0],2);
     gpioWrite(Select1, 1);
     gpioWrite(Select2, 0);
-    spiRead(handle, ADCS[1],2)
+    spiRead(handle, ADCS[1],2);
     gpioWrite(Select2, 1);
     gpioWrite(Select3, 0);
-    spiRead(handle, ADCS[2],2)
+    spiRead(handle, ADCS[2],2);
     gpioWrite(Select3, 1);
     gpioWrite(Select4, 0);
-    spiRead(handle, ADCS[3],2)
+    spiRead(handle, ADCS[3],2);
     gpioWrite(Select4, 1);
     gpioWrite(Select5, 0);
-    spiRead(handle, ADCS[4],2)
+    spiRead(handle, ADCS[4],2);
     gpioWrite(Select5, 1);
     gpioWrite(Select6, 0);
-    spiRead(handle, ADCS[5],2)
+    spiRead(handle, ADCS[5],2);
     gpioWrite(Select6, 1);
     gpioWrite(Select7, 0);
-    spiRead(handle, ADCS[6],2)
+    spiRead(handle, ADCS[6],2);
     gpioWrite(Select7, 1);
     gpioWrite(Select8, 0);
-    spiRead(handle, ADCS[7],2)
+    spiRead(handle, ADCS[7],2);
     gpioWrite(Select8, 1);
     gpioWrite(Select9, 0);
-    spiRead(handle, ADCS[8],2)
+    spiRead(handle, ADCS[8],2);
     gpioWrite(Select9, 1);
     gpioWrite(Select10, 0);
-    spiRead(handle, ADCS[9],2)
+    spiRead(handle, ADCS[9],2);
     gpioWrite(Select10, 1);
     gpioWrite(Select11, 0);
-    spiRead(handle, ADCS[10],2)
+    spiRead(handle, ADCS[10],2);
     gpioWrite(Select11, 1);
     gpioWrite(Select12, 0);
-    spiRead(handle, ADCS[11],2)
+    spiRead(handle, ADCS[11],2);
     gpioWrite(Select12, 1);
     
     for (int i = 0; i < 12; i++) {
