@@ -24,7 +24,7 @@ int main(){
     int handle = 0;
     uint16_t Data[1];
     uint16_t BulkData[12];
-    handle = spiOpen(0, 12000000,0);
+    handle = spiOpen(0, 6000000,0);
     // Set pins as outputs
     gpioSetMode(Select1, PI_OUTPUT);
     gpioSetMode(Select2, PI_OUTPUT);
