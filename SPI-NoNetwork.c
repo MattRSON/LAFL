@@ -5,17 +5,17 @@
 #include <unistd.h>
 
 #define Select1 2
-#define Select2 3
-#define Select3 4
-#define Select4 17
-#define Select5 27
-#define Select6 22
-#define Select7 14
-#define Select8 15
-#define Select9 18
-#define Select10 23
-#define Select11 24
-#define Select12 25
+// #define Select2 3
+// #define Select3 4
+// #define Select4 17
+// #define Select5 27
+// #define Select6 22
+// #define Select7 14
+// #define Select8 15
+// #define Select9 18
+// #define Select10 23
+// #define Select11 24
+// #define Select12 25
 
 
 int main(){
@@ -27,34 +27,34 @@ int main(){
     handle = spiOpen(1, 10000000, 0);
     // Set pins as outputs
     gpioSetMode(Select1, PI_OUTPUT);
-    gpioSetMode(Select2, PI_OUTPUT);
-    gpioSetMode(Select3, PI_OUTPUT);
-    gpioSetMode(Select4, PI_OUTPUT);
-    gpioSetMode(Select5, PI_OUTPUT);
-    gpioSetMode(Select6, PI_OUTPUT);
-    gpioSetMode(Select7, PI_OUTPUT);
-    gpioSetMode(Select8, PI_OUTPUT);
-    gpioSetMode(Select9, PI_OUTPUT);
-    gpioSetMode(Select10, PI_OUTPUT);
-    gpioSetMode(Select11, PI_OUTPUT);
-    gpioSetMode(Select12, PI_OUTPUT);
+    // gpioSetMode(Select2, PI_OUTPUT);
+    // gpioSetMode(Select3, PI_OUTPUT);
+    // gpioSetMode(Select4, PI_OUTPUT);
+    // gpioSetMode(Select5, PI_OUTPUT);
+    // gpioSetMode(Select6, PI_OUTPUT);
+    // gpioSetMode(Select7, PI_OUTPUT);
+    // gpioSetMode(Select8, PI_OUTPUT);
+    // gpioSetMode(Select9, PI_OUTPUT);
+    // gpioSetMode(Select10, PI_OUTPUT);
+    // gpioSetMode(Select11, PI_OUTPUT);
+    // gpioSetMode(Select12, PI_OUTPUT);
 
     // Writes all the pins high
     struct timespec begin, end; 
     //clock_gettime(CLOCK_REALTIME, &begin);
     
     gpioWrite(Select1, 1);
-    gpioWrite(Select2, 1);
-    gpioWrite(Select3, 1);
-    gpioWrite(Select4, 1);
-    gpioWrite(Select5, 1);
-    gpioWrite(Select6, 1);
-    gpioWrite(Select7, 1);
-    gpioWrite(Select8, 1);
-    gpioWrite(Select9, 1);
-    gpioWrite(Select10, 1);
-    gpioWrite(Select11, 1);
-    gpioWrite(Select12, 1);
+    // gpioWrite(Select2, 1);
+    // gpioWrite(Select3, 1);
+    // gpioWrite(Select4, 1);
+    // gpioWrite(Select5, 1);
+    // gpioWrite(Select6, 1);
+    // gpioWrite(Select7, 1);
+    // gpioWrite(Select8, 1);
+    // gpioWrite(Select9, 1);
+    // gpioWrite(Select10, 1);
+    // gpioWrite(Select11, 1);
+    // gpioWrite(Select12, 1);
 
     while(1){
         gpioWrite(Select1, 0);
