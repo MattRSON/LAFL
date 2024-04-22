@@ -18,6 +18,7 @@
 #define Select11 24
 #define Select12 25
 
+FILE *fp;
 
 int main(){
     // Init gpio
@@ -132,39 +133,23 @@ int main(){
         gpioWrite(Select12, 1);
         BulkData[11] = (Data[0]*256)+Data[1];
 
-        clock_gettime(CLOCK_REALTIME, &end);
-        double seconds = end.tv_sec - begin.tv_sec;
-        double nanoseconds = end.tv_nsec - begin.tv_nsec;
-        double elapsed = seconds + nanoseconds*1e-9;
 
-        printf("Time measured: %f seconds.\n", elapsed);
-        for (int i = 0; i < 12; i++) {
-            printf("%d ", BulkData[i]);
-        }
-        printf("\n");
+        fp = fopen("test.csv", "w");
+        fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
+        fclose(fp);
+        // clock_gettime(CLOCK_REALTIME, &end);
+        // double seconds = end.tv_sec - begin.tv_sec;
+        // double nanoseconds = end.tv_nsec - begin.tv_nsec;
+        // double elapsed = seconds + nanoseconds*1e-9;
+
+        // printf("Time measured: %f seconds.\n", elapsed);
+        // for (int i = 0; i < 12; i++) {
+        //     printf("%d ", BulkData[i]);
+        // }
+        // printf("\n");
         sleep(1);
     }
-    /*
-    
-    */
-    
-    // for (int i = 0; i < 12; i++) {
-    //     printf("%d ", BulkData[i]);
-    // }
-    //sleep(1);
-    //clock_gettime(CLOCK_REALTIME, &end);
-    // double seconds = end.tv_sec - begin.tv_sec;
-    // double nanoseconds = end.tv_nsec - begin.tv_nsec;
-    // double elapsed = seconds + nanoseconds*1e-9;
-
-    //printf("Time measured: %f seconds.\n", elapsed);
-
-    // Start Loop
-    /*
-    while(1){
-        gpioWrite(Select1, 0);
-    }
-    */
+   
 
     // Terminate the library
     spiClose(handle);
