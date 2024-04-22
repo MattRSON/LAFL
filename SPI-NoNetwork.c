@@ -59,8 +59,9 @@ int main(){
 
     gpioWrite(Select1, 0);
     sleep(1e-6);
-    spiRead(handle, (char*)Data,2);
+    spiRead(handle, (char*)Data, 2);
     gpioWrite(Select1, 1);
+    /*
     BulkData[0] = *Data;
     gpioWrite(Select2, 0);
     sleep(1e-6);
@@ -117,6 +118,7 @@ int main(){
     spiRead(handle, (char*)Data,2);
     gpioWrite(Select12, 1);
     BulkData[11] = *Data;
+    */
     
     for (int i = 0; i < 12; i++) {
         printf("%d ", BulkData[i]);
