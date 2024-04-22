@@ -43,6 +43,8 @@ int main(){
             timeinfo->tm_sec);        // Second
 
     strcat(datetime_str,".csv");
+    fp = fopen(datetime_str, "a");
+
 
     unsigned char Data[2];
     uint16_t BulkData[12];
@@ -154,9 +156,9 @@ int main(){
         BulkData[11] = (Data[0]*256)+Data[1];
 
         
-        fp = fopen(datetime_str, "a");
+        
         fprintf(fp, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",BulkData[0],BulkData[1],BulkData[2],BulkData[3],BulkData[4],BulkData[5],BulkData[6],BulkData[7],BulkData[8],BulkData[9],BulkData[10],BulkData[11]);
-        fclose(fp);
+        
         clock_gettime(CLOCK_REALTIME, &end);
         double seconds = end.tv_sec - begin.tv_sec;
         double nanoseconds = end.tv_nsec - begin.tv_nsec;
@@ -177,6 +179,7 @@ int main(){
    
 
     // Terminate the library
+    fclose(fp);
     spiClose(handle);
     gpioTerminate();
     return 0;
