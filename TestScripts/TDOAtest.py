@@ -271,7 +271,7 @@ def cross_correlation(signal1, signal2):
     # Calculate the cross-correlation
     return np.correlate(signal1, signal2_flipped, mode='full')
 
-filelog = r'../Recorded Data 2/20240422_121517.csv'
+filelog = r'../Recorded Data 2/20240422_124549.csv'
 print(filelog)
 realData = np.loadtxt(filelog, delimiter=',')
 
