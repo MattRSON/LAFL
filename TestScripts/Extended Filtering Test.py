@@ -123,9 +123,9 @@ def signal_handler(sig, frame):
 # Function for Butterworth lowpass filtering
 def butterworth_coef(fs, order=5):
     # Calculate Parameters
-    nyq= 0.5*fs
-    low = 800/nyq
-    high = 1100/nyq
+    nyq= 0.5*10000
+    low = 100/nyq
+    high = 4000/nyq
     # Plug parameters into butter to return coefficents for filter
     sos = butter(order, [low, high], btype='band', analog=False, output='sos')
     print(sos)

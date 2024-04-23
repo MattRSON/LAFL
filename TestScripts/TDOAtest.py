@@ -16,10 +16,9 @@ import sympy as sp # Sympy for systems of equations. Used in TDOA function.
 #from sympy.solvers import solve
 #from sympy.abc import x,y,z
 from scipy.optimize import minimize
-import csv
 
 
-DataRate = 666 #Hz
+DataRate = 10000 #Hz
 
 fig, axs = plt.subplots(2, 2)
 #fig, ax = plt.subplots() # Starts the plot
@@ -164,11 +163,17 @@ def butterworth_coef(cutoff, fs, order=5):
 # Call this function for filtering
 def butter_filter(data):
     # Calls function to find the filter coefficents
-    sos = [[ 2.27712213e-05,  4.55424426e-05,  2.27712213e-05,  1.00000000e+00, -1.23679968e+00,  7.72963183e-01],
-    [ 1.00000000e+00,  2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.15090317e+00,  8.00848255e-01],
-    [ 1.00000000e+00,  0.00000000e+00, -1.00000000e+00,  1.00000000e+00, -1.36580558e+00,  8.25787263e-01],
-    [ 1.00000000e+00, -2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.14994482e+00,  9.16524531e-01],
-    [ 1.00000000e+00, -2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.49785688e+00,  9.33438271e-01]]
+    # sos = [[ 2.13961520e-05,  4.27923041e-05,  2.13961520e-05,  1.00000000e+00, -1.44797260e+00,  7.75679511e-01],
+    #        [ 1.00000000e+00,  2.00000000e+00,  1.00000000e+00, 1.00000000e+00, -1.37919243e+00,  7.98024930e-01],
+    #        [ 1.00000000e+00,  0.00000000e+00, -1.00000000e+00,  1.00000000e+00, -1.56677322e+00,  8.33319209e-01],
+    #        [ 1.00000000e+00, -2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.40423528e+00,  9.14112629e-01],
+    #        [ 1.00000000e+00, -2.00000000e+00,  1.00000000e+00,  1.00000000e+00, -1.69358308e+00,  9.37816513e-01]]
+    
+    sos = [[ 0.31761272,  0.63522543,  0.31761272,  1.,          1.08905692,  0.35395093],
+           [ 1.,          2.,          1.,          1.,          1.37178046,  0.69698039],
+           [ 1.,          0.,         -1.,          1.,         -0.4360535,  -0.47056428],
+           [ 1.,         -2.,          1.,          1.,         -1.89890679,  0.90276295],
+           [ 1.,         -2.,          1.,          1.,         -1.95866335,  0.96255059]]
     # Uses filter coefs to filter the data
     filtered = sosfilt(sos, data)
     return filtered
@@ -178,7 +183,7 @@ def array_place(input):
     # Find midpoint of array
     zed = 1
     array_size = 50
-    spacing = 0.125
+    spacing = 0.1397
     middle = array_size/2
     if input == 1:
         positions = np.array([middle-((spacing*4)*np.sin(1.0472)),middle-((spacing*4)*np.cos(1.0472)),zed])
@@ -256,20 +261,19 @@ def update_plot(frame):
     counter = counter + 1
     #print(counter)
     global input1
-    F,D = nodeFFT(np.concatenate((input1[counter+0:counter+25], np.zeros(50))),7400)
+    F,D = nodeFFT(np.concatenate((input1[counter+0:counter+25], np.zeros(50))),10000)
     ax.plot(F[1:],abs(D[1:]))
 
-filelog = r'../Recorded Data 2/20240422_121344.csv'
+
+def cross_correlation(signal1, signal2):
+    # Reverse the second signal
+    signal2_flipped = np.flip(signal2)
+    # Calculate the cross-correlation
+    return np.correlate(signal1, signal2_flipped, mode='full')
+
+filelog = r'../Recorded Data 2/20240422_121517.csv'
 print(filelog)
-#realData = np.fromfile(filelog, dtype=np.float64)
-# with open(filelog, newline='') as csvfile:
-#     reader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-# #realData = np.reshape(realData,(12,-1))
-# #points = np.size(realData)/12
-#     for row in reader:
-#         realData.appen
 realData = np.loadtxt(filelog, delimiter=',')
-#print(realData)
 
 # x, fakeData1, fakeData2, fakeData3, fakeData4 = IdealData()
 # fakeData = [fakeData1,fakeData2,fakeData3,fakeData4]
@@ -277,21 +281,67 @@ realData = np.loadtxt(filelog, delimiter=',')
 # TDOA(realData, [2, 5, 8, 10])
 
 #2,5,8,10
-#input1 = butter_filter(realData[1])
-input1 = realData[1]
-input2 = butter_filter(realData[4])
-input3 = butter_filter(realData[7])
-input4 = butter_filter(realData[9])
 
+# input1 = np.concatenate((realData[:,1], np.zeros(100)))
+# input2 = np.concatenate((realData[:,4], np.zeros(100)))
+# input3 = np.concatenate((realData[:,7], np.zeros(100)))
+# input4 = np.concatenate((realData[:,9], np.zeros(100)))
+
+# input1 = butter_filter(realData[:,0])
+# input2 = butter_filter(realData[:,3])
+# input3 = butter_filter(realData[:,4])
+# input4 = butter_filter(realData[:,6])
+
+
+
+
+
+
+## Group A
+input1 = realData[:,0]
+input2 = realData[:,3]
+input3 = realData[:,4]
+input4 = realData[:,6]
+
+## Group B
+# input1 = realData[:,9]
+# input2 = realData[:,4]
+# input3 = realData[:,7]
+# input4 = realData[:,1]
+
+## Group C
+# input1 = realData[:,2]
+# input2 = realData[:,5]
+# input3 = realData[:,8]
+# input4 = realData[:,11]
+#size = np.size(input1)-25
+
+# counter = 0 
+# for i in range(size):
+#     MaxD = np.zeros(size)
+#     IndmaxD = np.zeros(size)
+#     F,D = nodeFFT(np.concatenate((input1[counter:counter+25], np.zeros(50))),10000)
+#     MaxD[i] = np.max(abs(D))
+#     IndmaxD[i] = np.where(abs(D) == MaxD[i])[0][0]
+
+# MaxD2 = np.max(abs(MaxD))
+# IndmaxD2 = np.where(abs(MaxD) == MaxD)[0][0]
+
+
+#print(str(MaxD2) + " at location " + str(IndmaxD2))
+# print(MaxD2)
+# print(IndmaxD2)
+# for x in input1:
+#     print(x)
 # input1 = butter_filter(fakeData1)
 # input2 = butter_filter(fakeData2)
-# input3 = butter_filter(fakeData3)
+# input3 = ]butter_filter(fakeData3)
 # input4 = butter_filter(fakeData4)
 #print(np.size(input1))
-F1,D1 = nodeFFT(input1,DataRate)
-F2,D2 = nodeFFT(input2,DataRate)
-F3,D3 = nodeFFT(input3,DataRate)
-F4,D4 = nodeFFT(input4,DataRate)
+# F1,D1 = nodeFFT(np.concatenate((input1, np.zeros(100))),DataRate)
+# F2,D2 = nodeFFT(np.concatenate((input1, np.zeros(100))),DataRate)
+# F3,D3 = nodeFFT(np.concatenate((input3, np.zeros(100))),DataRate)
+# F4,D4 = nodeFFT(np.concatenate((input4, np.zeros(100))),DataRate)
 
 #phase1,time1 = phase_difference(input1,input2)
 #phase2,time2 = phase_difference(input2,input3)
@@ -307,22 +357,22 @@ F4,D4 = nodeFFT(input4,DataRate)
 #x1, y1, z1 = TDOA([input1, input2, input3, input4],[1,2,3,4])
 #print(x1, y1, z1)
 
-axs[0, 0].plot(F1[100:], abs(D1[100:]))
-axs[0, 0].set_title('F1')
-axs[0, 1].plot(input1[0:10000], 'tab:orange')
-axs[0, 1].set_title('F2')
-axs[1, 0].plot(F3, abs(D3), 'tab:green')
-axs[1, 0].set_title('F3')
-axs[1, 1].plot(F4, abs(D4), 'tab:red')
-axs[1, 1].set_title('F4')
-# axs[0, 0].plot(input1[0:2500])
-# axs[0, 0].set_title('Signal1')
-# axs[0, 1].plot(input2, 'tab:orange')
-# axs[0, 1].set_title('Signal2')
-# axs[1, 0].plot(input3, 'tab:green')
-# axs[1, 0].set_title('Signal3')
-# axs[1, 1].plot(input4, 'tab:red')
-# axs[1, 1].set_title('Signal4')
+# axs[0, 0].plot(F1, abs(D1))
+# axs[0, 0].set_title('F1')
+# axs[0, 1].plot(F2, abs(D2), 'tab:orange')
+# axs[0, 1].set_title('F2')
+# axs[1, 0].plot(F3, abs(D3), 'tab:green')
+# axs[1, 0].set_title('F3')
+# axs[1, 1].plot(F4, abs(D4), 'tab:red')
+# axs[1, 1].set_title('F4')
+axs[0, 0].plot(input1)
+axs[0, 0].set_title('Mic 1')
+axs[0, 1].plot(input2, 'tab:orange')
+axs[0, 1].set_title('Mic 4')
+axs[1, 0].plot(input3, 'tab:green')
+axs[1, 0].set_title('Mic 5')
+axs[1, 1].plot(input4, 'tab:red')
+axs[1, 1].set_title('Mic 7')
 
 
 # for ax in axs.flat:
@@ -331,6 +381,24 @@ axs[1, 1].set_title('F4')
 # # Hide x labels and tick labels for top plots and y ticks for right plots.
 # for ax in axs.flat:
 #     ax.label_outer()  
-#counter = 0   
+  
 #ani = FuncAnimation(fig, update_plot, interval=1 ,cache_frame_data=False)
 plt.show()        
+
+
+
+# import numpy as np
+
+# def cross_correlation(signal1, signal2):
+#     # Reverse the second signal
+#     signal2_flipped = np.flip(signal2)
+#     # Calculate the cross-correlation
+#     return np.correlate(signal1, signal2_flipped, mode='full')
+
+# # Example signals
+# signal1 = np.array([1, 2, 3, 4, 5])
+# signal2 = np.array([0, 1, 0.5])
+
+# # Calculate cross-correlation
+# result = cross_correlation(signal1, signal2)
+# print("Cross-correlation result:", result)
