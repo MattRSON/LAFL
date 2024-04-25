@@ -271,7 +271,7 @@ def cross_correlation(signal1, signal2):
     # Calculate the cross-correlation
     return np.correlate(signal1, signal2_flipped, mode='full')
 
-filelog = r'../Recorded Data 2/20240422_124549.csv'
+filelog = r'../Recorded Data 2/20240422_121517.csv'
 print(filelog)
 realData = np.loadtxt(filelog, delimiter=',')
 
@@ -287,10 +287,10 @@ realData = np.loadtxt(filelog, delimiter=',')
 # input3 = np.concatenate((realData[:,7], np.zeros(100)))
 # input4 = np.concatenate((realData[:,9], np.zeros(100)))
 
-# input1 = butter_filter(realData[:,0])
-# input2 = butter_filter(realData[:,3])
-# input3 = butter_filter(realData[:,4])
-# input4 = butter_filter(realData[:,6])
+input1 = butter_filter(realData[:,0])
+input2 = butter_filter(realData[:,3])
+input3 = butter_filter(realData[:,4])
+input4 = butter_filter(realData[:,6])
 
 
 
@@ -298,10 +298,10 @@ realData = np.loadtxt(filelog, delimiter=',')
 
 
 ## Group A
-input1 = realData[:,0]
-input2 = realData[:,3]
-input3 = realData[:,4]
-input4 = realData[:,6]
+# input1 = realData[:,0]
+# input2 = realData[:,3]
+# input3 = realData[:,4]
+# input4 = realData[:,6]
 
 ## Group B
 # input1 = realData[:,9]
@@ -338,10 +338,10 @@ input4 = realData[:,6]
 # input3 = ]butter_filter(fakeData3)
 # input4 = butter_filter(fakeData4)
 #print(np.size(input1))
-# F1,D1 = nodeFFT(np.concatenate((input1, np.zeros(100))),DataRate)
-# F2,D2 = nodeFFT(np.concatenate((input1, np.zeros(100))),DataRate)
-# F3,D3 = nodeFFT(np.concatenate((input3, np.zeros(100))),DataRate)
-# F4,D4 = nodeFFT(np.concatenate((input4, np.zeros(100))),DataRate)
+F1,D1 = nodeFFT(np.concatenate((input1, np.zeros(100))),DataRate)
+F2,D2 = nodeFFT(np.concatenate((input1, np.zeros(100))),DataRate)
+F3,D3 = nodeFFT(np.concatenate((input3, np.zeros(100))),DataRate)
+F4,D4 = nodeFFT(np.concatenate((input4, np.zeros(100))),DataRate)
 
 #phase1,time1 = phase_difference(input1,input2)
 #phase2,time2 = phase_difference(input2,input3)
@@ -357,22 +357,22 @@ input4 = realData[:,6]
 #x1, y1, z1 = TDOA([input1, input2, input3, input4],[1,2,3,4])
 #print(x1, y1, z1)
 
-# axs[0, 0].plot(F1, abs(D1))
-# axs[0, 0].set_title('F1')
-# axs[0, 1].plot(F2, abs(D2), 'tab:orange')
-# axs[0, 1].set_title('F2')
-# axs[1, 0].plot(F3, abs(D3), 'tab:green')
-# axs[1, 0].set_title('F3')
-# axs[1, 1].plot(F4, abs(D4), 'tab:red')
-# axs[1, 1].set_title('F4')
-axs[0, 0].plot(input1)
-axs[0, 0].set_title('Mic 1')
-axs[0, 1].plot(input2, 'tab:orange')
-axs[0, 1].set_title('Mic 4')
-axs[1, 0].plot(input3, 'tab:green')
-axs[1, 0].set_title('Mic 5')
-axs[1, 1].plot(input4, 'tab:red')
-axs[1, 1].set_title('Mic 7')
+axs[0, 0].plot(F1, abs(D1))
+axs[0, 0].set_title('F1')
+axs[0, 1].plot(F2, abs(D2), 'tab:orange')
+axs[0, 1].set_title('F2')
+axs[1, 0].plot(F3, abs(D3), 'tab:green')
+axs[1, 0].set_title('F3')
+axs[1, 1].plot(F4, abs(D4), 'tab:red')
+axs[1, 1].set_title('F4')
+# axs[0, 0].plot(input1)
+# axs[0, 0].set_title('Mic 1')
+# axs[0, 1].plot(input2, 'tab:orange')
+# axs[0, 1].set_title('Mic 4')
+# axs[1, 0].plot(input3, 'tab:green')
+# axs[1, 0].set_title('Mic 5')
+# axs[1, 1].plot(input4, 'tab:red')
+# axs[1, 1].set_title('Mic 7')
 
 
 # for ax in axs.flat:
